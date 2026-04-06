@@ -1,27 +1,10 @@
-# 🫧 gooey-toast
+# 🫧 expo-gooey-toast
 
-🍞 Morphing blob toasts for React Native — pill → card with gooey SVG transitions.
+Morphing blob toasts for React Native — pill → card with gooey SVG transitions.
 
 ## 🎥 Preview
 
-<table>
-<tr>
-<td>
-
-**iOS**
-
 https://github.com/user-attachments/assets/example-gooey-toast
-
-</td>
-<td>
-
-**Android**
-
-https://github.com/user-attachments/assets/example-gooey-toast
-
-</td>
-</tr>
-</table>
 
 ## ✨ Features
 
@@ -38,11 +21,10 @@ https://github.com/user-attachments/assets/example-gooey-toast
 ## ⚙️ Installation
 
 ```bash
-git clone https://github.com/rit3zh/gooey-toast
-cd gooey-toast
+git clone https://github.com/rit3zh/expo-gooey-toast
+cd expo-gooey-toast
 bun install
 bun ios
-bun android
 ```
 
 ---
