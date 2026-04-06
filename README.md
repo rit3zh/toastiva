@@ -1,56 +1,118 @@
-# Welcome to your Expo app 👋
+# 🫧 gooey-toast
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+🍞 Morphing blob toasts for React Native — pill → card with gooey SVG transitions.
 
-## Get started
+## 🎥 Preview
 
-1. Install dependencies
+<table>
+<tr>
+<td>
 
-   ```bash
-   npm install
-   ```
+**iOS**
 
-2. Start the app
+https://github.com/user-attachments/assets/example-gooey-toast
 
-   ```bash
-   npx expo start
-   ```
+</td>
+<td>
 
-In the output, you'll find options to open the app in a
+**Android**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+https://github.com/user-attachments/assets/example-gooey-toast
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+</td>
+</tr>
+</table>
 
-## Get a fresh project
+## ✨ Features
 
-When you're ready, run:
+- 🫧 Gooey morphing blob animations (pill → card → pill)
+- ⚡ Built with **Reanimated 4** + **SVG**
+- 📱 Works on **iOS & Android**
+- 🔄 Promise toasts with automatic spinner
+- 🎨 4 body layouts — `left`, `center`, `right`, `spread`
+- 🧩 Fully **TypeScript-ready**
+- 🪄 Swipe to dismiss, timestamps, action buttons & meta labels
+
+---
+
+## ⚙️ Installation
 
 ```bash
-npm run reset-project
+git clone https://github.com/rit3zh/gooey-toast
+cd gooey-toast
+bun install
+bun ios
+bun android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-### Other setup steps
+## 🚀 Usage
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Wrap your app with `<GooeyToaster />` and call `gooeyToast` anywhere.
 
-## Learn more
+```tsx
+import { GooeyToaster, gooeyToast } from "@/src";
 
-To learn more about developing your project with Expo, look at the following resources:
+// In your root layout
+<GooeyToaster position="top-center" visibleToasts={3} />;
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+// Trigger toasts
+gooeyToast("Hello world");
 
-## Join the community
+gooeyToast.success("Saved");
 
-Join our community of developers creating universal apps.
+gooeyToast.error("Connection lost", {
+  description: "Check your internet and try again.",
+  bodyLayout: "right",
+});
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+gooeyToast.promise(fetchData(), {
+  loading: "Loading…",
+  success: "Done",
+  error: "Failed",
+  description: {
+    loading: "Fetching your data…",
+    success: "Everything is up to date.",
+    error: "Something went wrong.",
+  },
+});
+```
+
+---
+
+## 📖 API
+
+| Method                                | Description              |
+| ------------------------------------- | ------------------------ |
+| `gooeyToast(title, options?)`         | Default toast            |
+| `gooeyToast.success(title, options?)` | Success toast            |
+| `gooeyToast.error(title, options?)`   | Error toast              |
+| `gooeyToast.warning(title, options?)` | Warning toast            |
+| `gooeyToast.info(title, options?)`    | Info toast               |
+| `gooeyToast.promise(promise, data)`   | Async toast with spinner |
+| `gooeyToast.dismiss(id)`              | Dismiss by ID            |
+| `gooeyToast.dismissAll()`             | Dismiss all              |
+
+### Options
+
+| Prop            | Type                                        | Default  |
+| --------------- | ------------------------------------------- | -------- |
+| `description`   | `string`                                    | —        |
+| `bodyLayout`    | `"left" \| "center" \| "right" \| "spread"` | `"left"` |
+| `duration`      | `number`                                    | `4000`   |
+| `icon`          | `ReactNode`                                 | —        |
+| `action`        | `{ label, onClick }`                        | —        |
+| `meta`          | `string`                                    | —        |
+| `position`      | `"top" \| "bottom"`                         | `"top"`  |
+| `dismissible`   | `boolean`                                   | `true`   |
+| `showTimestamp` | `boolean`                                   | `false`  |
+
+---
+
+> [!NOTE]
+> **PS** Works with React Native Reanimated V4 + Expo SDK 55
+
+## Stack
+
+Expo 55 · React Native 0.83 · Reanimated 4 · SVG · Expo Router

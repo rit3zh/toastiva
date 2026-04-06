@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /Users/rit3zhcx/expo-gooey-tabs/goey-toast/src/icons/*.tsx)",
+      "Bash(npx expo:*)",
+      "Bash(kill %1)",
+      "Bash(curl -s http://localhost:8081/src/app/index.bundle?platform=ios)",
+      "Bash(curl -s \"http://localhost:8081/src/app/index.bundle?platform=ios\")"
+    ]
+  }
+}
