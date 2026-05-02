@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(rm /Users/rit3zhcx/Desktop/expo-gooey-toast/.git/index.lock)",
-      "Bash(git -C /Users/rit3zhcx/Desktop/expo-gooey-toast status)"
-    ]
-  }
-}

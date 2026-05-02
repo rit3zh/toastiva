@@ -39,6 +39,10 @@ yarn-error.*
 # local env files
 .env*.local
 
+# hidden folders (ignore all dotfolders, allow only .github)
+.*/
+!.github/
+
 # typescript
 *.tsbuildinfo
 
