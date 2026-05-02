@@ -112,6 +112,8 @@ toastiva.success("Saved", { description: "Your changes are ready." });
   </tr>
 </table>
 
+The layout is inspired by: sileo.aaryan.design
+
 ## License
 
 MIT &copy; [Ritesh](https://github.com/rit3zh)
