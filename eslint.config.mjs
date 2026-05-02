@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
 export default [
@@ -15,6 +16,9 @@ export default [
   ...tseslint.configs.recommended,
   {
     files: ["**/*.{ts,tsx}"],
+    plugins: {
+      "react-hooks": reactHooks,
+    },
     languageOptions: {
       parserOptions: {
         ecmaFeatures: {
@@ -24,6 +28,8 @@ export default [
     },
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
     },
   },
 ];

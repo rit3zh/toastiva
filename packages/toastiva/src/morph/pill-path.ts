@@ -11,7 +11,6 @@ function morphPath(
 ): string {
   "worklet";
   const pr = PH / 2;
-  const canvasW = cw ?? bw;
   // Do not clamp pillW to canvasW — the clipContainer's overflow:hidden handles
   // all visual clipping. Clamping here caused an instant snap to the new smaller
   // pill width when canvasW (static prop) updated before the spring settled.

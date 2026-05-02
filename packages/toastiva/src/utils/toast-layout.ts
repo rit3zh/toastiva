@@ -1,6 +1,5 @@
 import type { IToastHeightParams, IToastWidthParams } from "../typings";
 import {
-  ACTION_SIZE,
   BADGE_SIZE,
   BODY_PADDING_BOTTOM,
   BODY_PADDING_H,

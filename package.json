@@ -26,9 +26,10 @@
     "@eslint/js": "^9.39.2",
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.6.2",
     "turbo": "^2.6.3",
-    "typescript-eslint": "^8.48.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.48.0"
   }
 }
