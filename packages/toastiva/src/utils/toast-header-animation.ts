@@ -57,10 +57,6 @@ const headerOverlayContentStyle = {
 };
 
 const headerRootStyle = {
-  // No overflow:"hidden" here. The clipContainer (borderRadius: PH/2,
-  // overflow:"hidden") is the pill-shaped clip boundary for all content.
-  // Adding overflow:"hidden" without borderRadius on the header creates a
-  // rectangular clip at maxWidth that makes text look square at the pill edge.
   position: "relative" as const,
 };
 

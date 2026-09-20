@@ -9,13 +9,13 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "pnpm --filter example start",
-    "ios": "pnpm --filter example ios",
-    "android": "pnpm --filter example android",
-    "web": "pnpm --filter example web",
+    "start": "pnpm --filter toastiva-example start",
+    "ios": "pnpm --filter toastiva-example ios",
+    "android": "pnpm --filter toastiva-example android",
+    "web": "pnpm --filter toastiva-example web",
     "dev": "turbo dev --parallel",
     "dev:docs": "pnpm --filter docs dev",
-    "dev:example": "pnpm --filter example dev",
+    "dev:example": "pnpm --filter toastiva-example start",
     "build": "turbo build",
     "build:packages": "turbo build --filter='./packages/*'",
     "typecheck": "turbo typecheck",

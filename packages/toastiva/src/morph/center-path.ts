@@ -1,4 +1,6 @@
 import { PH } from "../constants";
+import { getBodyWidthProgress } from "./body-emergence";
+import { getBodyGeometry } from "./body-geometry";
 import { smoothCorner } from "./smooth-corner";
 
 function morphPathCenter(
@@ -32,15 +34,13 @@ function morphPathCenter(
       "Z",
     ].join(" ");
   }
-  // Use static canvas width (cw) for pill positioning so pillOffset stays
-  // constant during expansion (bw springs from pillWidth → expandedWidth).
-  // Do not clamp pillW — clipContainer clips visually; SVG uses overflow=visible.
+
   const canvasW = cw ?? bw;
   const pillW = pw;
   const pillOffset = (canvasW - pillW) / 2;
   const bodyH = PH + (th - PH) * t;
 
-  if (t <= 0 || bodyH - PH < 8) {
+  if (t <= 0) {
     return [
       `M ${pillOffset},${pr}`,
       `A ${pr},${pr} 0 0 1 ${pillOffset + pr},0`,
@@ -53,40 +53,52 @@ function morphPathCenter(
     ].join(" ");
   }
 
-  const curve = 14 * t;
-  const cr = Math.min(Math.max(0, radius), (bodyH - PH) * 0.45);
-  const halfWidth = pillW / 2 + ((bw - pillW) / 2) * t;
+  const pillRight = pillOffset + pillW;
+
+  const wt = getBodyWidthProgress<number>(t);
+  const halfWidth = pillW / 2 + ((bw - pillW) / 2) * wt;
   const bodyLeft = bw / 2 - halfWidth;
   const bodyRight = bw / 2 + halfWidth;
-  const bodyTop = PH - curve;
-  const qLeftX = Math.max(bodyLeft + cr, pillOffset - curve);
-  const qRightX = Math.min(bodyRight - cr, pillOffset + pillW + curve);
+  const overhang = halfWidth - pillW / 2;
+  const {
+    bodyTop,
+    curve,
+    grow: growEff,
+    rBottom,
+    rTopMax,
+    sEff,
+    yJunction,
+  } = getBodyGeometry(bodyH, overhang, radius, s, t, halfWidth);
 
-  // Per-corner radii, shrunk so the squircle shoulder (r * grow) always fits
-  // the available straight run — prevents the smoothing from overshooting the
-  // short top edges next to the pill junction.
-  const vHalf = (bodyH - (bodyTop + curve)) / 2;
-  const hHalf = (bodyRight - bodyLeft) / 2;
+  const qLeftX = Math.max(bodyLeft + rTopMax, pillOffset - curve);
+  const qRightX = Math.min(bodyRight - rTopMax, pillRight + curve);
   const gR = bodyRight - qRightX;
   const gL = qLeftX - bodyLeft;
-  const rTR = Math.min(cr, gR / grow, vHalf / grow);
-  const rBR = Math.min(cr, vHalf / grow, hHalf / grow);
-  const rBL = Math.min(cr, hHalf / grow, vHalf / grow);
-  const rTL = Math.min(cr, vHalf / grow, gL / grow);
+  const vRun = Math.max(0, bodyH - rBottom * growEff - bodyTop);
+  const rTR = Math.max(0, Math.min(rTopMax, gR / growEff, vRun / growEff));
+  const rTL = Math.max(0, Math.min(rTopMax, gL / growEff, vRun / growEff));
+  const rBR = Math.max(
+    0,
+    Math.min(rBottom, (bodyH - bodyTop - rTR * growEff) / growEff),
+  );
+  const rBL = Math.max(
+    0,
+    Math.min(rBottom, (bodyH - bodyTop - rTL * growEff) / growEff),
+  );
 
   return [
     `M ${pillOffset},${pr}`,
     `A ${pr},${pr} 0 0 1 ${pillOffset + pr},0`,
-    `H ${pillOffset + pillW - pr}`,
-    `A ${pr},${pr} 0 0 1 ${pillOffset + pillW},${pr}`,
-    `L ${pillOffset + pillW},${bodyTop}`,
-    `Q ${pillOffset + pillW},${bodyTop + curve} ${qRightX},${bodyTop + curve}`,
-    smoothCorner(bodyRight, bodyTop + curve, 1, 0, 0, 1, rTR, s),
-    smoothCorner(bodyRight, bodyH, 0, 1, -1, 0, rBR, s),
-    smoothCorner(bodyLeft, bodyH, -1, 0, 0, -1, rBL, s),
-    smoothCorner(bodyLeft, bodyTop + curve, 0, -1, 1, 0, rTL, s),
+    `H ${pillRight - pr}`,
+    `A ${pr},${pr} 0 0 1 ${pillRight},${pr}`,
+    `L ${pillRight},${yJunction}`,
+    `Q ${pillRight},${bodyTop} ${qRightX},${bodyTop}`,
+    smoothCorner(bodyRight, bodyTop, 1, 0, 0, 1, rTR, sEff),
+    smoothCorner(bodyRight, bodyH, 0, 1, -1, 0, rBR, sEff),
+    smoothCorner(bodyLeft, bodyH, -1, 0, 0, -1, rBL, sEff),
+    smoothCorner(bodyLeft, bodyTop, 0, -1, 1, 0, rTL, sEff),
     `H ${qLeftX}`,
-    `Q ${pillOffset},${bodyTop + curve} ${pillOffset},${bodyTop}`,
+    `Q ${pillOffset},${bodyTop} ${pillOffset},${yJunction}`,
     "Z",
   ].join(" ");
 }

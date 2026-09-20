@@ -1,11 +1,11 @@
 function getBodyRevealProgress<T extends number>(progress: T) {
   "worklet";
-  return Math.max(0, Math.min(1, (progress - 0.24) / 0.76));
+  return progress < 0 ? 0 : progress > 1 ? 1 : progress;
 }
 
 function getContentRevealProgress<T extends number>(progress: T) {
   "worklet";
-  return Math.max(0, Math.min(1, (progress - 0.46) / 0.54));
+  return progress < 0 ? 0 : progress > 1 ? 1 : progress;
 }
 
 export { getBodyRevealProgress, getContentRevealProgress };

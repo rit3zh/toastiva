@@ -34,6 +34,7 @@ interface IToastWidthParams {
 interface IResolvedToastSpringConfig {
   bodyReveal: WithSpringConfig;
   morph: WithSpringConfig;
+  morphCollapse: WithSpringConfig;
   mount: WithSpringConfig;
   pillResize: WithSpringConfig;
   squish: WithSpringConfig;

@@ -46,10 +46,9 @@ function useToastEffects(params: IUseToastEffectsParams) {
     animationConfig.morph.bodyFadeDelay ?? getBodyFadeDelay(toast);
   const bodyFadeDuration =
     animationConfig.morph.bodyFadeDuration ?? getBodyFadeDuration(toast);
-  const descriptionSpringDelay =
-    animationConfig.morph.descriptionDelay ?? bodyFadeDelay;
-  const actionSpringDelay =
-    bodyFadeDelay + animationConfig.morph.actionDelay;
+
+  const descriptionSpringDelay = animationConfig.morph.descriptionDelay ?? 0;
+  const actionSpringDelay = animationConfig.morph.actionDelay;
   const squishDelay =
     animationConfig.morph.squishDelay ??
     Math.max(24, Math.round(expandDuration * 0.08));
@@ -72,18 +71,11 @@ function useToastEffects(params: IUseToastEffectsParams) {
       return;
     }
 
-    // Sileo holds the previous pill width while the new content is still
-    // being measured (its `pillWidth` state stays at the last measured value
-    // until the next ResizeObserver tick). Without this gate, a morph swap
-    // animates pillWidth to the title-length *estimate* first, then springs
-    // again to the real measurement. That's the "shrink to a square then
-    // round out" pop the user sees right after a state change.
     if (!isMeasured) return;
 
     const shouldAnimateExpandedUpdate = hasBody && shouldShowExpandedBody;
     const shouldAnimateDimensions = morphMode || shouldAnimateExpandedUpdate;
-    // In morph mode, use the same spring config as morphProgress so all values
-    // settle together (Sileo-style unified animation).
+
     const dimensionSpring = morphMode
       ? springConfig.morph
       : springConfig.pillResize;
@@ -134,21 +126,14 @@ function useToastEffects(params: IUseToastEffectsParams) {
     springConfig,
   ]);
 
-  // Sileo's `ready` flag pattern: hold the mount animation at 0 (invisible +
-  // off-screen, via cardStyle) until the first real measurement is applied.
-  // Without this gate the toast renders one frame at the estimated/default
-  // pill width before the measured width arrives. That frame is the
-  // "square box that then rounds" flash the user sees on first show.
   const mountStartedRef = useRef(false);
   useEffect(() => {
     if (mountStartedRef.current) return;
     if (!isMeasured) return;
     mountStartedRef.current = true;
-    values.mountProgress.value = withTiming(1, {
-      duration: animationConfig.mount.duration,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, [animationConfig.mount.duration, isMeasured, values]);
+
+    values.mountProgress.value = withSpring(1, springConfig.mount);
+  }, [isMeasured, springConfig, values]);
 
   useEffect(() => {
     if (toast.type !== "error") return;
@@ -249,38 +234,30 @@ function useToastEffects(params: IUseToastEffectsParams) {
       );
       return;
     }
-    // Sileo-style collapse: content fades out fast (≈ 0.08 * shape duration),
-    // shape contracts on a single unified spring so morphProgress, squish and
-    // dimensions all settle on the same curve. Using withSpring (instead of a
-    // bezier timing) gives the soft overshoot/settle that makes the collapse
-    // feel like the shape is breathing back into the pill rather than easing
-    // along a fixed curve.
+
     const collapseShapeDuration = getSmoothCollapseDuration(
       animationConfig.morph.collapseDuration,
     );
+    const contentFadeDelay = Math.round(collapseShapeDuration * 0.04);
     const contentFadeDuration = Math.max(
-      80,
-      Math.round(collapseShapeDuration * 0.18),
+      60,
+      Math.round(collapseShapeDuration * 0.08),
     );
-    const contentSettleDuration = Math.max(
-      140,
-      Math.round(collapseShapeDuration * 0.45),
-    );
-    values.bodyOpacity.value = withTiming(0, {
-      duration: contentFadeDuration,
-      easing: Easing.out(Easing.quad),
-    });
-    values.descriptionProgress.value = withTiming(0, {
-      duration: contentSettleDuration,
-      easing: Easing.out(Easing.cubic),
-    });
-    values.actionProgress.value = withTiming(0, {
-      duration: contentSettleDuration,
-      easing: Easing.out(Easing.cubic),
-    });
-    values.squishY.value = withSpring(1, springConfig.morph);
-    values.squishX.value = withSpring(1, springConfig.morph);
-    values.morphProgress.value = withSpring(0, springConfig.morph);
+    const contentFade = (toValue: number) =>
+      withDelay(
+        contentFadeDelay,
+        withTiming(toValue, {
+          duration: contentFadeDuration,
+          easing: Easing.out(Easing.quad),
+        }),
+      );
+
+    values.bodyOpacity.value = contentFade(0);
+    values.descriptionProgress.value = contentFade(0);
+    values.actionProgress.value = contentFade(0);
+    values.squishY.value = withSpring(1, springConfig.morphCollapse);
+    values.squishX.value = withSpring(1, springConfig.morphCollapse);
+    values.morphProgress.value = withSpring(0, springConfig.morphCollapse);
   }, [
     bodyFadeDelay,
     bodyFadeDuration,
@@ -307,8 +284,8 @@ function useToastEffects(params: IUseToastEffectsParams) {
     const expandedInStack =
       !isDismissing && (expanded || shouldShowExpandedBody);
     const wasExpandedInStack = previousExpandedInStack.current;
-    const isCollapsingExpandedStack =
-      wasExpandedInStack && !expandedInStack && !isDismissing;
+
+    const isCollapsingExpandedStack = wasExpandedInStack && !expandedInStack;
     previousExpandedInStack.current = expandedInStack;
     const nextHeight = expandedInStack ? expandedHeight : collapsedCardHeight;
     const nextTranslate =
@@ -325,20 +302,15 @@ function useToastEffects(params: IUseToastEffectsParams) {
           animationConfig.stack.minOpacity,
           0.94 - stackDepth * animationConfig.stack.opacityStep,
         );
-    // Single timing curve across all four stack properties so the reshuffle
-    // settles in one frame instead of three (Y/scale/height on a spring,
-    // opacity on a 180ms timing). Matched to the 420ms mount duration so
-    // a new toast lands as the existing stack finishes making room.
+
     const stackAnim = {
       duration: animationConfig.stack.duration,
       easing: Easing.out(Easing.cubic),
     };
-    // Sileo collapses the shell on the same spring as the morph so the height
-    // retraction breathes with the path's shape change instead of running on a
-    // separate bezier and finishing a beat earlier.
+
     const stackTiming = (toValue: number) =>
       isCollapsingExpandedStack
-        ? withSpring(toValue, springConfig.morph)
+        ? withSpring(toValue, springConfig.morphCollapse)
         : withTiming(toValue, stackAnim);
 
     values.stackY.value = stackTiming(nextTranslate);

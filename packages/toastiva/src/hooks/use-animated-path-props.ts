@@ -1,4 +1,5 @@
 import { useAnimatedProps } from "react-native-reanimated";
+import { MORPH_OVERSHOOT } from "../constants";
 import { morphPath, morphPathCenter, morphPathRight } from "../morph";
 import { IUseToastAnimatedStylesParams } from "../typings";
 
@@ -9,7 +10,9 @@ const useAnimatedPathProps = <T extends IUseToastAnimatedStylesParams>(
 
   return useAnimatedProps(() => {
     const progress = values.morphProgress.value;
-    const t = progress < 0 ? 0 : progress > 1 ? 1 : progress;
+
+    const max = 1 + MORPH_OVERSHOOT;
+    const t = progress < 0 ? 0 : progress > max ? max : progress;
 
     const pillWidth = values.pillWidth.value;
     const bodyW = values.bodyWidth.value;

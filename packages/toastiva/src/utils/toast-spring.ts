@@ -1,5 +1,6 @@
 import {
   BODY_REVEAL_SPRING,
+  MORPH_COLLAPSE_SPRING,
   MORPH_SPRING,
   MOUNT_SPRING,
   PILL_RESIZE_SPRING,
@@ -28,6 +29,7 @@ function resolveToastSpringConfig(
   return {
     bodyReveal: mergeSpringConfig(BODY_REVEAL_SPRING, springConfig),
     morph: mergeSpringConfig(MORPH_SPRING, springConfig),
+    morphCollapse: mergeSpringConfig(MORPH_COLLAPSE_SPRING, springConfig),
     mount: mergeSpringConfig(MOUNT_SPRING, springConfig),
     pillResize: mergeSpringConfig(PILL_RESIZE_SPRING, springConfig),
     squish: mergeSpringConfig(SQUISH_SPRING, springConfig),

@@ -135,14 +135,6 @@ function useToastHeaderMorph(params: IUseToastHeaderMorphParams) {
     morphVersionRef.current = morphVersion;
     isMorphingRef.current = true;
 
-    // On Android, write the initial shared values directly on the UI thread
-    // via runOnUI so they land during the Choreographer animation phase —
-    // which is guaranteed to run before the traversal/draw phase that paints
-    // the new header content. Without this, the JS-thread → UI-thread write of
-    // `value = 0` races with React's commit: the new title can be drawn for
-    // one frame at the old opacity (1) before the value reaches the UI thread,
-    // producing a visible flash. iOS doesn't need this because CoreAnimation
-    // batches all layer changes into the same transaction as the React commit.
     if (Platform.OS === "android") {
       scheduleOnUI(() => {
         "worklet";

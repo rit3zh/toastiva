@@ -30,12 +30,6 @@ const ToastSurface: React.MemoExoticComponent<React.FC<IToastSurfaceProps>> =
             height={props.renderHeight}
             viewBox={`0 0 ${props.bodyWidth} ${props.renderHeight}`}
             fill="none"
-            // Sileo: SVG canvas stays a stable container; pill geometry animates
-            // inside it. With overflow="visible", a path drawn at a width that
-            // exceeds the static canvas (e.g. while pillWidth.value is still
-            // springing toward a smaller measured bodyWidth) still renders its
-            // full rounded right edge — the clipContainer above handles all
-            // visual cropping at the animated shell width.
             style={[
               styles.svgBg,
               Platform.OS === "web" ? svgShapeShadowStyle : null,
@@ -58,8 +52,6 @@ const ToastSurface: React.MemoExoticComponent<React.FC<IToastSurfaceProps>> =
             ]}
             pointerEvents="box-none"
           >
-            {/* Outer wrapper: preserves original toast-level FadeIn/FadeOut */}
-
             {props.noHeader ? null : (
               <Animated.View
                 entering={hasBodyContent ? undefined : FadeIn.duration(500)}

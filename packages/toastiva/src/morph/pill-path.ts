@@ -1,4 +1,6 @@
 import { PH } from "../constants";
+import { getBodyWidthProgress } from "./body-emergence";
+import { getBodyGeometry } from "./body-geometry";
 
 function morphPath(
   pw: number,
@@ -11,9 +13,7 @@ function morphPath(
 ): string {
   "worklet";
   const pr = PH / 2;
-  // Do not clamp pillW to canvasW — the clipContainer's overflow:hidden handles
-  // all visual clipping. Clamping here caused an instant snap to the new smaller
-  // pill width when canvasW (static prop) updated before the spring settled.
+
   const pillW = pw;
   const bodyH = PH + (th - PH) * t;
 
@@ -36,7 +36,7 @@ function morphPath(
     ].join(" ");
   }
 
-  if (t <= 0 || bodyH - PH < 8) {
+  if (t <= 0) {
     return [
       `M 0,${pr}`,
       `A ${pr},${pr} 0 0 1 ${pr},0`,
@@ -49,25 +49,39 @@ function morphPath(
     ].join(" ");
   }
 
-  const curve = 14 * t;
-  const cr = Math.min(Math.max(0, radius), (bodyH - PH) * 0.45);
-  const bodyW = pillW + (bw - pillW) * t;
-  const bodyTop = PH - curve;
-  const qEndX = Math.min(pillW + curve, bodyW - cr);
+  const bodyW = pillW + (bw - pillW) * getBodyWidthProgress<number>(t);
+  const overhang = bodyW - pillW;
+
+  const { bodyTop, curve, rBottom, rTopMax, yJunction } = getBodyGeometry(
+    bodyH,
+    overhang,
+    radius,
+    0,
+    t,
+    bodyW / 2,
+  );
+
+  const qEndX = Math.min(pillW + curve, bodyW - rTopMax);
+  const rTop = Math.max(
+    0,
+    Math.min(rTopMax, bodyW - qEndX, bodyH - bodyTop - rBottom),
+  );
+  const rBR = Math.max(0, Math.min(rBottom, bodyH - bodyTop - rTop));
+  const rBL = Math.max(0, Math.min(rBottom, bodyH - pr));
 
   return [
     `M 0,${pr}`,
     `A ${pr},${pr} 0 0 1 ${pr},0`,
     `H ${pillW - pr}`,
     `A ${pr},${pr} 0 0 1 ${pillW},${pr}`,
-    `L ${pillW},${bodyTop}`,
-    `Q ${pillW},${bodyTop + curve} ${qEndX},${bodyTop + curve}`,
-    `H ${bodyW - cr}`,
-    `A ${cr},${cr} 0 0 1 ${bodyW},${bodyTop + curve + cr}`,
-    `L ${bodyW},${bodyH - cr}`,
-    `A ${cr},${cr} 0 0 1 ${bodyW - cr},${bodyH}`,
-    `H ${cr}`,
-    `A ${cr},${cr} 0 0 1 0,${bodyH - cr}`,
+    `L ${pillW},${yJunction}`,
+    `Q ${pillW},${bodyTop} ${qEndX},${bodyTop}`,
+    `H ${bodyW - rTop}`,
+    `A ${rTop},${rTop} 0 0 1 ${bodyW},${bodyTop + rTop}`,
+    `L ${bodyW},${bodyH - rBR}`,
+    `A ${rBR},${rBR} 0 0 1 ${bodyW - rBR},${bodyH}`,
+    `H ${rBL}`,
+    `A ${rBL},${rBL} 0 0 1 0,${bodyH - rBL}`,
     "Z",
   ].join(" ");
 }

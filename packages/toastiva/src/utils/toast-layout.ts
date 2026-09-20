@@ -6,6 +6,7 @@ import {
   DESC_SIZE,
   EXPANDED_TOAST_MAX_WIDTH,
   ICON_GAP,
+  MORPH_OVERSHOOT,
   PH,
   PILL_PADDING_H,
   TITLE_SIZE,
@@ -24,22 +25,14 @@ function getToastWidths<T extends IToastWidthParams>(params: T) {
     maxWidth,
   );
   const pillWidth =
-    params.measuredPillWidth > 0 ?
-      Math.min(params.measuredPillWidth, maxWidth)
-    : estimated;
+    params.measuredPillWidth > 0
+      ? Math.min(params.measuredPillWidth, maxWidth)
+      : estimated;
   const expandedWidth = Math.min(
     params.expandedWidth ?? EXPANDED_TOAST_MAX_WIDTH,
     availableWidth,
   );
 
-  // Sileo keeps a constant SVG canvas WIDTH (350) and only animates the pill
-  // rect inside it — the rounded ends are always inside the canvas, regardless
-  // of the current pill width. We mirror that here by sizing bodyWidth to the
-  // expanded width even for compact toasts. The animated `shellStyle.width`
-  // (= pillWidth.value when collapsed) plus `clipContainer`'s overflow:hidden
-  // do all the visual cropping. This eliminates the bug where bodyWidth would
-  // snap to a smaller measured pill while pillWidth.value was still springing,
-  // clipping the path's rounded right edge into a flat "square".
   const bodyWidth = Math.max(pillWidth, expandedWidth);
 
   return {
@@ -55,12 +48,19 @@ function getToastHeights(params: IToastHeightParams) {
     params.expandedHeightOverride ?? calculatedHeight ?? params.measuredHeight,
     PH,
   );
-  const collapsedCardHeight =
-    params.isFront ? PH : Math.max(params.frontHeight, PH);
+  const collapsedCardHeight = params.isFront
+    ? PH
+    : Math.max(params.frontHeight, PH);
+
+  const overshootHeadroom = (expandedHeight - PH) * MORPH_OVERSHOOT;
   return {
     collapsedCardHeight,
     expandedHeight,
-    renderHeight: Math.max(expandedHeight, params.frontHeight, PH),
+    renderHeight: Math.max(
+      expandedHeight + overshootHeadroom,
+      params.frontHeight,
+      PH,
+    ),
   };
 }
 
@@ -68,13 +68,9 @@ function getCalculatedExpandedHeight(params: IToastHeightParams) {
   if (params.hasCustomContent) return undefined;
   if (!params.description && !params.actionLabel) return PH;
 
-  const bodyWidth = Math.max(
-    PH,
-    params.bodyWidth - BODY_PADDING_H * 2,
-  );
-  const descriptionHeight =
-    params.description ?
-      getDescriptionHeight({
+  const bodyWidth = Math.max(PH, params.bodyWidth - BODY_PADDING_H * 2);
+  const descriptionHeight = params.description
+    ? getDescriptionHeight({
         bodyLayout: params.bodyLayout,
         bodyWidth,
         description: params.description,
@@ -85,9 +81,9 @@ function getCalculatedExpandedHeight(params: IToastHeightParams) {
   const descriptionActionGap =
     params.description && params.actionLabel ? DESCRIPTION_ACTION_GAP : 0;
   const centerActionBottomGap =
-    params.bodyLayout === "center" && params.actionLabel ?
-      CENTER_ACTION_BOTTOM_GAP
-    : 0;
+    params.bodyLayout === "center" && params.actionLabel
+      ? CENTER_ACTION_BOTTOM_GAP
+      : 0;
   const progressHeight = params.showProgress ? INLINE_PROGRESS_GAP_HEIGHT : 0;
   const bodyHeight =
     BODY_PADDING_TOP +
@@ -106,18 +102,15 @@ function getDescriptionHeight({
   bodyWidth,
   description,
   hasMeta,
-}: Pick<
-  IToastHeightParams,
-  "bodyLayout"
-> & {
+}: Pick<IToastHeightParams, "bodyLayout"> & {
   bodyWidth: number;
   description: string;
   hasMeta: boolean;
 }) {
   const textWidth =
-    bodyLayout === "spread" || bodyLayout === "right" ?
-      bodyWidth - (hasMeta ? DESCRIPTION_META_WIDTH + DESCRIPTION_ROW_GAP : 0)
-    : bodyWidth;
+    bodyLayout === "spread" || bodyLayout === "right"
+      ? bodyWidth - (hasMeta ? DESCRIPTION_META_WIDTH + DESCRIPTION_ROW_GAP : 0)
+      : bodyWidth;
   const availableTextWidth = Math.max(DESC_SIZE, textWidth);
   const lineHeight = DESC_SIZE * 1.55;
   const lineCount = description
@@ -127,7 +120,9 @@ function getDescriptionHeight({
         count +
         Math.max(
           1,
-          Math.ceil((line.length * DESCRIPTION_CHAR_WIDTH) / availableTextWidth),
+          Math.ceil(
+            (line.length * DESCRIPTION_CHAR_WIDTH) / availableTextWidth,
+          ),
         ),
       0,
     );

@@ -24,8 +24,8 @@ export const styles = StyleSheet.create({
   surfaceShell: {
     position: "relative",
     overflow: "visible",
-    // backgroundColor: "red",
-    borderRadius: PH / 2, // ← add this
+
+    borderRadius: PH / 2,
   },
   surfaceShadow: {
     shadowColor: "#000",

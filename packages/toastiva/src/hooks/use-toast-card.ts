@@ -65,10 +65,7 @@ function useToastCard(props: IToastivaProps) {
   const showProgress = props.toast.showProgress ?? props.defaultShowProgress;
   const bodyRadius =
     props.toast.bodyRadius ?? props.defaultBodyRadius ?? DEFAULT_BODY_RADIUS;
-  // 0 = plain circular corners, 1 = full squircle. Reads `cornerSmoothing` off
-  // the toast (per-toast) or `defaultCornerSmoothing` off the provider, falling
-  // back to the package default. Cast defensively so this compiles ahead of the
-  // public prop-type additions documented in the changelog.
+
   const cornerSmoothing =
     (props.toast as { cornerSmoothing?: number }).cornerSmoothing ??
     (props as { defaultCornerSmoothing?: number }).defaultCornerSmoothing ??
@@ -104,8 +101,7 @@ function useToastCard(props: IToastivaProps) {
   const showBodyDelay = props.morphMode ? MORPH_BODY_DELAY : SHOW_BODY_DELAY;
   const [showBody, setShowBody] = useState(false);
   const [renderBody, setRenderBody] = useState(false);
-  // Mirror body visibility into refs so timers/effects can make decisions
-  // without adding state values that would restart the collapse timer.
+
   const showBodyRef = useRef(showBody);
   const renderBodyRef = useRef(renderBody);
   const toastIdRef = useRef(props.toast.id);
@@ -207,8 +203,7 @@ function useToastCard(props: IToastivaProps) {
     }
     setShowBody(false);
     setRenderBody(false);
-    // Reset swipe and exit animations so the incoming toast doesn't inherit
-    // the exiting toast's off-screen position or opacity state.
+
     cancelAnimation(values.swipeX);
     cancelAnimation(values.swipeY);
     cancelAnimation(values.removeProgress);
@@ -249,10 +244,6 @@ function useToastCard(props: IToastivaProps) {
   const shouldRevealBody =
     isReadyToExpand && (props.expanded || shouldAutoExpand);
 
-  // When content updates (e.g. promise resolves with new description) the
-  // card key changes and measurements go stale for a frame or two.  We must
-  // NOT hide the body during this window or we trigger a visible
-  // collapse → re-expand flash.
   const isRemeasuringWithVisibleBody =
     effectiveShowBody &&
     shouldLayoutExpandedContent &&
@@ -268,7 +259,7 @@ function useToastCard(props: IToastivaProps) {
       clearTimeout(bodyUnmountTimerRef.current);
       bodyUnmountTimerRef.current = null;
     }
-    // Keep body shown while measurements are catching up to updated content.
+
     if (isRemeasuringWithVisibleBody) return;
     if (!shouldRevealBody) {
       setShowBody(false);
@@ -288,8 +279,7 @@ function useToastCard(props: IToastivaProps) {
       };
     }
     setRenderBody(true);
-    // Body is already visible — skip the expand delay and avoid a redundant
-    // setState call (e.g. when only heights change after a content update).
+
     if (showBodyRef.current) return;
     showBodyTimerRef.current = setTimeout(() => {
       showBodyTimerRef.current = null;
@@ -387,14 +377,9 @@ function useToastCard(props: IToastivaProps) {
   const headerAlign = morphAlign;
   const noHeader =
     Boolean(props.toast.content) && props.toast.showHeader === false;
-  // noHeader entrance: keep width fixed at bodyWidth (no horizontal morph) and
-  // animate height from PH (thin pill bar) to expandedHeight via morphProgress.
-  // The path renders a rounded rectangle that grows in height — no pill bump,
-  // no width pop, just a clean expand-down reveal of the user's content.
+
   const effectivePillWidth = noHeader ? widths.bodyWidth : widths.pillWidth;
-  const effectiveCollapsedHeight = noHeader
-    ? PH
-    : heights.collapsedCardHeight;
+  const effectiveCollapsedHeight = noHeader ? PH : heights.collapsedCardHeight;
   const animated = useToastAnimatedStyles({
     animationConfig,
     bodyWidth: widths.bodyWidth,

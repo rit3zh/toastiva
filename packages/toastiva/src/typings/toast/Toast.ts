@@ -69,6 +69,7 @@ type TToastivaIOSBlurTint = NonNullable<BlurViewProps["tint"]>;
 interface IToastivaAnimationSpringConfig {
   bodyReveal?: TToastivaSpringConfig;
   morph?: TToastivaSpringConfig;
+  morphCollapse?: TToastivaSpringConfig;
   mount?: TToastivaSpringConfig;
   pillResize?: TToastivaSpringConfig;
   squish?: TToastivaSpringConfig;

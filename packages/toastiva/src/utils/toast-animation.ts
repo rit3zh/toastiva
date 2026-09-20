@@ -1,5 +1,6 @@
 import {
   BODY_REVEAL_SPRING,
+  MORPH_COLLAPSE_SPRING,
   MORPH_SPRING,
   MOUNT_SPRING,
   PILL_RESIZE_SPRING,
@@ -20,9 +21,10 @@ const smoothAnimation: IToastivaAnimationConfig = {
   morph: {
     actionDelay: 80,
     collapseDuration: 280,
-    squishDuration: 60,
-    squishScaleX: 1.06,
-    squishScaleY: 0.88,
+
+    squishDuration: 90,
+    squishScaleX: 1.015,
+    squishScaleY: 0.975,
   },
   stack: {
     collapseDelay: 220,
@@ -36,6 +38,9 @@ const smoothAnimation: IToastivaAnimationConfig = {
     squishDuration: 55,
     squishScaleX: 1.03,
     squishScaleY: 0.95,
+  },
+  springs: {
+    morph: { damping: 21, stiffness: 235, mass: 1 },
   },
 };
 
@@ -67,6 +72,7 @@ const toastivaAnimationPresets: Record<
     springs: {
       bodyReveal: { damping: 20, stiffness: 360, mass: 0.7 },
       morph: { damping: 20, stiffness: 360, mass: 0.8 },
+      morphCollapse: { damping: 34, stiffness: 360, mass: 0.8 },
       pillResize: { damping: 20, stiffness: 360, mass: 0.8 },
       squish: { damping: 15, stiffness: 460, mass: 0.6 },
     },
@@ -91,6 +97,7 @@ const toastivaAnimationPresets: Record<
     springs: {
       bodyReveal: { damping: 28, stiffness: 170, mass: 1.1 },
       morph: { damping: 30, stiffness: 170, mass: 1.1 },
+      morphCollapse: { damping: 28, stiffness: 170, mass: 1.1 },
       pillResize: { damping: 30, stiffness: 170, mass: 1.1 },
       squish: { damping: 22, stiffness: 240, mass: 0.9 },
     },
@@ -122,6 +129,7 @@ const toastivaAnimationPresets: Record<
     springs: {
       bodyReveal: { damping: 40, stiffness: 420, mass: 1 },
       morph: { damping: 40, stiffness: 420, mass: 1 },
+      morphCollapse: { damping: 41, stiffness: 420, mass: 1 },
       pillResize: { damping: 40, stiffness: 420, mass: 1 },
       squish: { damping: 40, stiffness: 420, mass: 1 },
     },
@@ -172,9 +180,9 @@ function resolveToastAnimationConfig({
       collapseDuration: config.morph?.collapseDuration ?? 280,
       descriptionDelay: config.morph?.descriptionDelay,
       squishDelay: config.morph?.squishDelay,
-      squishDuration: config.morph?.squishDuration ?? 60,
-      squishScaleX: config.morph?.squishScaleX ?? 1.06,
-      squishScaleY: config.morph?.squishScaleY ?? 0.88,
+      squishDuration: config.morph?.squishDuration ?? 90,
+      squishScaleX: config.morph?.squishScaleX ?? 1.015,
+      squishScaleY: config.morph?.squishScaleY ?? 0.975,
     },
     mount: {
       axis: config.mount?.axis ?? "y",
@@ -188,6 +196,11 @@ function resolveToastAnimationConfig({
         springs.bodyReveal,
       ),
       morph: mergeSpringConfig(MORPH_SPRING, springConfig, springs.morph),
+      morphCollapse: mergeSpringConfig(
+        MORPH_COLLAPSE_SPRING,
+        springConfig,
+        springs.morphCollapse,
+      ),
       mount: mergeSpringConfig(MOUNT_SPRING, springConfig, springs.mount),
       pillResize: mergeSpringConfig(
         PILL_RESIZE_SPRING,

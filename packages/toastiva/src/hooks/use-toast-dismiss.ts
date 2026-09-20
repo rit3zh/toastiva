@@ -1,6 +1,11 @@
 import type { IUseToastDismissParams } from "../typings";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Easing, withDelay, withTiming } from "react-native-reanimated";
+import {
+  Easing,
+  withDelay,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { SHOW_BODY_DELAY } from "../constants";
 import { getCollapseDuration, getDisplayDuration } from "../utils/toast-timing";
 
@@ -16,6 +21,7 @@ function useToastDismiss(params: IUseToastDismissParams) {
     onRemove,
     paused = false,
     shouldAutoExpand,
+    springConfig,
     toast,
     values,
   } = params;
@@ -58,43 +64,52 @@ function useToastDismiss(params: IUseToastDismissParams) {
     const collapseShapeDuration = collapseBeforeExit
       ? getSmoothDismissCollapseDuration(animationConfig.morph.collapseDuration)
       : 100;
+
+    if (collapseBeforeExit) {
+      values.morphProgress.value = withSpring(0, springConfig.morphCollapse);
+      values.squishY.value = withSpring(1, springConfig.morphCollapse);
+      values.squishX.value = withSpring(1, springConfig.morphCollapse);
+    } else {
+      const collapseAnim = {
+        duration: collapseShapeDuration,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+      };
+      values.morphProgress.value = withTiming(0, collapseAnim);
+      values.squishY.value = withTiming(1, collapseAnim);
+      values.squishX.value = withTiming(1, collapseAnim);
+    }
+
     const collapseContentDuration = collapseBeforeExit
       ? getSmoothDismissContentDuration(collapseShapeDuration)
       : 90;
-    const collapseAnim = {
-      duration: collapseShapeDuration,
-      easing: Easing.bezier(0.4, 0, 0.2, 1),
-    };
-
-    values.morphProgress.value = withTiming(0, collapseAnim);
-    values.bodyOpacity.value = withTiming(0, {
+    const contentFade = withTiming(0, {
       duration: collapseContentDuration,
       easing: Easing.out(Easing.quad),
     });
-    values.descriptionProgress.value = withTiming(0, {
-      duration: collapseContentDuration,
-      easing: Easing.out(Easing.cubic),
-    });
-    values.actionProgress.value = withTiming(0, {
-      duration: collapseContentDuration,
-      easing: Easing.out(Easing.cubic),
-    });
-    values.squishY.value = withTiming(1, collapseAnim);
-    values.squishX.value = withTiming(1, collapseAnim);
+    values.bodyOpacity.value = contentFade;
+    values.descriptionProgress.value = contentFade;
+    values.actionProgress.value = contentFade;
 
-    const exitDelay = collapseBeforeExit ? collapseShapeDuration + 40 : 40;
+    const exitFadeDuration = 320;
+    const exitDelay = collapseBeforeExit
+      ? Math.round(collapseShapeDuration * 0.45)
+      : 40;
     values.removeProgress.value = withDelay(
       exitDelay,
-      withTiming(1, { duration: 220, easing: Easing.in(Easing.quad) }),
+      withTiming(1, {
+        duration: exitFadeDuration,
+        easing: Easing.out(Easing.quad),
+      }),
     );
     toast.onDismiss?.();
-    setTimeout(() => onRemove(toast.id), exitDelay + 280);
+    setTimeout(() => onRemove(toast.id), exitDelay + exitFadeDuration + 40);
   }, [
     collapseDuration,
     animationConfig.morph.collapseDuration,
     hasBody,
     onRemove,
     paused,
+    springConfig,
     toast,
     values,
   ]);
@@ -107,14 +122,13 @@ function useToastDismiss(params: IUseToastDismissParams) {
       }
       return;
     }
-    // Don't gate on isVisible — toasts beyond visibleCount still need to
-    // age out. Otherwise spammed toasts pile up in the back of the stack
-    // forever, only starting their timer once they slide into view.
+
     if (hasBody && shouldAutoExpand && !showBody) return;
 
-    const autoDismissDelay = hasBody && shouldAutoExpand
-      ? Math.max(0, displayDuration - SHOW_BODY_DELAY - collapseDuration)
-      : displayDuration;
+    const autoDismissDelay =
+      hasBody && shouldAutoExpand
+        ? Math.max(0, displayDuration - SHOW_BODY_DELAY - collapseDuration)
+        : displayDuration;
 
     const delay = remainingRef.current ?? autoDismissDelay;
     timerStartRef.current = Date.now();
@@ -153,7 +167,7 @@ function getSmoothDismissCollapseDuration(duration: number) {
 }
 
 function getSmoothDismissContentDuration(duration: number) {
-  return Math.max(150, Math.round(duration * 0.62));
+  return Math.max(60, Math.round(duration * 0.08));
 }
 
 export { useToastDismiss };

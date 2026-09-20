@@ -23,6 +23,8 @@ const DEFAULT_HORIZONTAL_INSET = 16;
 const EXPANDED_TOAST_MAX_WIDTH = 720;
 const SHOW_BODY_DELAY = 330;
 
+const MORPH_OVERSHOOT = 0.08;
+
 const MOUNT_SPRING: WithSpringConfig = {
   damping: 16,
   stiffness: 200,
@@ -33,9 +35,16 @@ const STACK_SPRING: WithSpringConfig = {
   stiffness: 220,
   mass: 0.7,
 };
+
 const MORPH_SPRING: WithSpringConfig = {
-  damping: 22,
-  stiffness: 220,
+  damping: 23,
+  stiffness: 235,
+  mass: 1,
+};
+
+const MORPH_COLLAPSE_SPRING: WithSpringConfig = {
+  damping: 31,
+  stiffness: 235,
   mass: 1,
 };
 const PILL_RESIZE_SPRING: WithSpringConfig = MORPH_SPRING;
@@ -64,6 +73,8 @@ export {
   EXPANDED_TOAST_MAX_WIDTH,
   ICON_GAP,
   ICON_SIZE,
+  MORPH_COLLAPSE_SPRING,
+  MORPH_OVERSHOOT,
   MORPH_SPRING,
   MORPH_SWAP_COLLAPSE_MS,
   MOUNT_SPRING,

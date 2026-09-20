@@ -1,5 +1,4 @@
 import { useAnimatedStyle } from "react-native-reanimated";
-import { getContentRevealProgress } from "../math/toast-body+content-math";
 import { IUseToastAnimatedStylesParams } from "../typings";
 
 export const useAnimatedDescriptionStyle = <
@@ -10,19 +9,11 @@ export const useAnimatedDescriptionStyle = <
   const { values } = params;
 
   return useAnimatedStyle(() => {
-    const progress = values.morphProgress.value;
-    const t = progress < 0 ? 0 : progress > 1 ? 1 : progress;
-
-    const revealT = getContentRevealProgress<number>(t);
-    const settle = values.descriptionProgress.value;
-    const bodyOpacity = values.bodyOpacity.value;
-
-    const opacityRaw = bodyOpacity * revealT * settle;
-    const opacity = opacityRaw < 0 ? 0 : opacityRaw > 1 ? 1 : opacityRaw;
+    const opacityRaw =
+      values.bodyOpacity.value * values.descriptionProgress.value;
 
     return {
-      opacity,
-      transform: [{ translateY: (1 - settle) * 8 }],
+      opacity: opacityRaw < 0 ? 0 : opacityRaw > 1 ? 1 : opacityRaw,
     };
   }, []);
 };

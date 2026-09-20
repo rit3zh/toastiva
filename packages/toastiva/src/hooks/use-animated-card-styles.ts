@@ -14,11 +14,11 @@ const useAnimatedCardStyles = <T extends IUseToastAnimatedStylesParams>(
 
     const baseTranslate = DIRECTION * animationConfig.mount.offset;
     const mountTranslate = (1 - mount) * baseTranslate + remove * baseTranslate;
-    const opacity = mount * (1 - remove) * values.stackOpacity.value;
-    const translateX =
-      animationConfig.mount.axis === "x" ? mountTranslate : 0;
-    const translateY =
-      animationConfig.mount.axis === "y" ? mountTranslate : 0;
+
+    const mountFade = mount > 1 ? 1 : mount;
+    const opacity = mountFade * (1 - remove) * values.stackOpacity.value;
+    const translateX = animationConfig.mount.axis === "x" ? mountTranslate : 0;
+    const translateY = animationConfig.mount.axis === "y" ? mountTranslate : 0;
 
     return {
       opacity: opacity > 0 ? opacity : 0,
