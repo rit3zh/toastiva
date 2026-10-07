@@ -6,7 +6,6 @@ import {
   interpolate,
   useAnimatedProps,
   useAnimatedStyle,
-  withSpring,
 } from "react-native-reanimated";
 
 import { HEADER_BLUR_INTENSITY } from "../utils/toast-header-animation";
@@ -26,13 +25,11 @@ function useToastHeaderAnimatedStyles(
       opacity,
       filter: [
         {
-          blur: withSpring(
-            interpolate(
-              progress,
-              [0, 1],
-              [HEADER_LAYER_MAX_BLUR_PX, 0],
-              Extrapolation.CLAMP,
-            ),
+          blur: interpolate(
+            progress,
+            [0, 1],
+            [HEADER_LAYER_MAX_BLUR_PX, 0],
+            Extrapolation.CLAMP,
           ),
         },
       ],
@@ -47,13 +44,11 @@ function useToastHeaderAnimatedStyles(
       opacity,
       filter: [
         {
-          blur: withSpring(
-            interpolate(
-              progress,
-              [0, 1],
-              [0, HEADER_LAYER_MAX_BLUR_PX],
-              Extrapolation.CLAMP,
-            ),
+          blur: interpolate(
+            progress,
+            [0, 1],
+            [0, HEADER_LAYER_MAX_BLUR_PX],
+            Extrapolation.CLAMP,
           ),
         },
       ],
@@ -64,13 +59,11 @@ function useToastHeaderAnimatedStyles(
     Required<Pick<BlurViewProps, "intensity">>
   >(
     () => ({
-      intensity: withSpring(
-        interpolate(
-          currentTitleProgress.value,
-          [0, 0.5, 1],
-          [0, HEADER_BLUR_INTENSITY, 0],
-          Extrapolation.CLAMP,
-        ),
+      intensity: interpolate(
+        currentTitleProgress.value,
+        [0, 0.2, 1],
+        [0, HEADER_BLUR_INTENSITY, 0],
+        Extrapolation.CLAMP,
       ),
     }),
     [],

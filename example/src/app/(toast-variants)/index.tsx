@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { toastiva } from "toastiva";
 import AirPodsModel from "../../../components/models/3d-airpods";
+import { ANIMATION_SECTIONS } from "../../../components/toast-demos";
 import { SquircleView } from "../../../reacticx-components/squircle-view";
 
 type ToastivaShowcaseItem = {
@@ -233,6 +234,7 @@ const SECTIONS: ToastivaShowcaseSection[] = [
       },
     ],
   },
+  ...ANIMATION_SECTIONS,
 ];
 
 const Index = () => {

@@ -1,6 +1,6 @@
 import { useAnimatedProps } from "react-native-reanimated";
-import { MORPH_OVERSHOOT } from "../constants";
-import { morphPath, morphPathCenter, morphPathRight } from "../morph";
+import { MORPH_OVERSHOOT, PH } from "../constants";
+import { morphPanelPath, morphShapePath } from "../morph";
 import { IUseToastAnimatedStylesParams } from "../typings";
 
 const useAnimatedPathProps = <T extends IUseToastAnimatedStylesParams>(
@@ -14,54 +14,38 @@ const useAnimatedPathProps = <T extends IUseToastAnimatedStylesParams>(
     const max = 1 + MORPH_OVERSHOOT;
     const t = progress < 0 ? 0 : progress > max ? max : progress;
 
-    const pillWidth = values.pillWidth.value;
     const bodyW = values.bodyWidth.value;
     const expandedHeight = values.expandedHeight.value;
     const bodyRadius = values.bodyRadius.value;
     const smoothing = values.cornerSmoothing.value;
 
-    if (morphAlign === "center") {
+    if (noHeader) {
       return {
-        d: morphPathCenter(
-          pillWidth,
-          bodyW,
-          expandedHeight,
-          t,
+        d: morphPanelPath(
           bodyWidth,
-          bodyRadius,
-          noHeader,
-          smoothing,
-        ),
-      };
-    }
-
-    if (morphAlign === "right") {
-      return {
-        d: morphPathRight(
-          pillWidth,
           bodyW,
-          expandedHeight,
+          PH + (expandedHeight - PH) * t,
           t,
-          bodyWidth,
+          morphAlign,
           bodyRadius,
-          noHeader,
           smoothing,
         ),
       };
     }
 
     return {
-      d: morphPath(
-        pillWidth,
-        bodyW,
-        expandedHeight,
-        t,
+      d: morphShapePath(
         bodyWidth,
+        values.pillWidth.value,
+        bodyW,
+        (expandedHeight - PH) * t,
+        expandedHeight - PH,
+        morphAlign,
         bodyRadius,
-        noHeader,
+        smoothing,
       ),
     };
-  }, [noHeader]);
+  }, [bodyWidth, morphAlign, noHeader]);
 };
 
 export { useAnimatedPathProps };

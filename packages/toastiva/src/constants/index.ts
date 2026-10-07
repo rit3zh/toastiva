@@ -23,7 +23,7 @@ const DEFAULT_HORIZONTAL_INSET = 16;
 const EXPANDED_TOAST_MAX_WIDTH = 720;
 const SHOW_BODY_DELAY = 330;
 
-const MORPH_OVERSHOOT = 0.08;
+const MORPH_OVERSHOOT = 0.14;
 
 const MOUNT_SPRING: WithSpringConfig = {
   damping: 16,
@@ -52,7 +52,7 @@ const BODY_REVEAL_SPRING: WithSpringConfig = MORPH_SPRING;
 const SQUISH_SPRING: WithSpringConfig = {
   damping: 16,
   stiffness: 375,
-  mass: 0.7,
+  mass: 0.5,
 };
 
 export {

@@ -33,13 +33,21 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.28,
     shadowRadius: 24,
   },
-  clipContainer: {
-    overflow: "hidden",
-    alignItems: "center",
-  },
-  clipFill: { width: "100%", height: "100%" },
+  surfaceFrame: { width: "100%", height: "100%", alignItems: "center" },
   flipX: { transform: [{ scaleX: -1 }] },
   surfaceCanvas: { position: "relative", backgroundColor: "transparent" },
+  pillProgressFrame: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: PH,
+  },
+  pillProgressClip: {
+    height: PH,
+    overflow: "hidden",
+    borderRadius: PH / 2,
+  },
   svgBg: {
     position: "absolute",
     top: 0,
@@ -66,6 +74,16 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   headerRight: { alignSelf: "flex-end" },
+  headerClip: { overflow: "hidden", borderRadius: PH / 2 },
+  headerBlur: {
+    position: "absolute",
+    top: 4,
+    bottom: 4,
+    left: 6,
+    right: 6,
+    borderRadius: 9999,
+    overflow: "hidden",
+  },
   iconWrap: {
     width: BADGE_SIZE,
     height: BADGE_SIZE,

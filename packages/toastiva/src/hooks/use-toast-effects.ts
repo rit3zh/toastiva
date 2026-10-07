@@ -193,12 +193,7 @@ function useToastEffects(params: IUseToastEffectsParams) {
     cancelAnimation(values.squishX);
 
     if (shouldShowExpandedBody) {
-      values.morphProgress.value = morphMode
-        ? withSpring(1, springConfig.morph)
-        : withTiming(1, {
-            duration: expandDuration,
-            easing: Easing.out(Easing.cubic),
-          });
+      values.morphProgress.value = withSpring(1, springConfig.morph);
       values.bodyOpacity.value = withDelay(
         bodyFadeDelay,
         withTiming(1, {

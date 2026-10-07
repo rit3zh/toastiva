@@ -13,7 +13,6 @@ interface IToastAnimatedStylesResult {
   animatedPathProps: TToastivaAnimatedPathProps;
   bodyStyle: TToastivaAnimatedViewStyle;
   cardStyle: TToastivaAnimatedViewStyle;
-  clipStyle: TToastivaAnimatedViewStyle;
   contentStyle: TToastivaAnimatedViewStyle;
   descriptionStyle: TToastivaAnimatedViewStyle;
   headerMaxWidthStyle: TToastivaAnimatedViewStyle;

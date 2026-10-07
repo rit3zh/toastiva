@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Platform, Pressable } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { styles } from "../styles/toast.styles";
@@ -45,14 +45,7 @@ const ToastCard: React.MemoExoticComponent<React.FC<IToastCardProps>> = memo(
                 props.animated.shellStyle,
               ]}
             >
-              <Animated.View
-                style={[
-                  styles.clipContainer,
-                  styles.clipFill,
-                  { alignItems: morphAlign },
-                  props.animated.clipStyle,
-                ]}
-              >
+              <View style={[styles.surfaceFrame, { alignItems: morphAlign }]}>
                 <ToastSurface
                   toast={props.toast}
                   Icon={props.Icon}
@@ -82,7 +75,7 @@ const ToastCard: React.MemoExoticComponent<React.FC<IToastCardProps>> = memo(
                   styleOverrides={props.styleOverrides}
                   surfaceFill={props.surfaceFill}
                 />
-              </Animated.View>
+              </View>
             </Animated.View>
             <ToastMeasure
               bodyLayout={props.bodyLayout}

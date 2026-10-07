@@ -21,10 +21,9 @@ const smoothAnimation: IToastivaAnimationConfig = {
   morph: {
     actionDelay: 80,
     collapseDuration: 280,
-
     squishDuration: 90,
-    squishScaleX: 1.015,
-    squishScaleY: 0.975,
+    squishScaleX: 1,
+    squishScaleY: 1,
   },
   stack: {
     collapseDelay: 220,
@@ -40,7 +39,7 @@ const smoothAnimation: IToastivaAnimationConfig = {
     squishScaleY: 0.95,
   },
   springs: {
-    morph: { damping: 21, stiffness: 235, mass: 1 },
+    morph: { damping: 23, stiffness: 235, mass: 1 },
   },
 };
 

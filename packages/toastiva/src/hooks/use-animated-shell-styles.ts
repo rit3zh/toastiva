@@ -1,32 +1,38 @@
-import { MORPH_OVERSHOOT } from "../constants";
+import { MORPH_OVERSHOOT, PH } from "../constants";
+import { getMorphExtents } from "../morph";
 import { IUseToastAnimatedStylesParams } from "../typings";
 import { useAnimatedStyle } from "react-native-reanimated";
 
 const useAnimatedShellStyle = <T extends IUseToastAnimatedStylesParams>(
   params: T,
 ) => {
-  const { values } = params;
+  const { values, morphAlign, bodyWidth } = params;
 
   const shellStyle = useAnimatedStyle(() => {
     const progress = values.morphProgress.value;
 
     const max = 1 + MORPH_OVERSHOOT;
-    const tRaw = progress < 0 ? 0 : progress > max ? max : progress;
-    const t = tRaw > 1 ? 1 : tRaw;
-
-    const pillWidth = values.pillWidth.value;
-    const bodyWidth = values.bodyWidth.value;
-    const widthDiff = bodyWidth - pillWidth;
+    const t = progress < 0 ? 0 : progress > max ? max : progress;
 
     const collapsedHeight = values.collapsedHeight.value;
     const expandedHeight = values.expandedHeight.value;
-    const heightDiff = expandedHeight - collapsedHeight;
+
+    const extents = getMorphExtents(
+      bodyWidth,
+      values.pillWidth.value,
+      values.bodyWidth.value,
+      (expandedHeight - PH) * t,
+      expandedHeight - PH,
+      morphAlign,
+    );
+    const left = Math.min(extents.pillLeft, extents.bodyLeft);
+    const right = Math.max(extents.pillRight, extents.bodyRight);
 
     return {
-      width: pillWidth + widthDiff * t,
-      height: collapsedHeight + heightDiff * tRaw,
+      width: right - left,
+      height: collapsedHeight + (expandedHeight - collapsedHeight) * t,
     };
-  }, []);
+  }, [bodyWidth, morphAlign]);
 
   return shellStyle;
 };

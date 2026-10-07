@@ -1,5 +1,4 @@
 export { useAnimatedActionStyle } from "./use-animated-action-styles";
-export { useAnimatedClipStyle } from "./use-animated-clip-styles";
 export { useAnimatedContentStyle } from "./use-animated-content-styles";
 export { useAnimatedDescriptionStyle } from "./use-animated-description-styles";
 export { useAnimatedHeaderMaxWidthStyle } from "./use-animated-header-max-styles";

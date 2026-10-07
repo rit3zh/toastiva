@@ -1,8 +1,7 @@
 import { Feather } from "@expo/vector-icons";
-import { DarkTheme } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Image } from "expo-image";
-import { Stack } from "expo-router";
+import { DarkTheme, Stack } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import React from "react";
 import {

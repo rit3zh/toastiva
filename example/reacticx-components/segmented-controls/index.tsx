@@ -178,7 +178,7 @@ const SegmentedControl: React.FC<ISegmentedControl> &
         <Animated.View
           style={[
             {
-              ...StyleSheet.absoluteFillObject,
+              ...StyleSheet.absoluteFill,
               position: "absolute",
               width: (width - 4) / tabsCount,
               top: 0,
@@ -224,7 +224,7 @@ const SegmentedControl: React.FC<ISegmentedControl> &
             {
               overflow: "hidden",
               borderRadius,
-              ...StyleSheet.absoluteFillObject,
+              ...StyleSheet.absoluteFill,
             },
           ]}
           animatedProps={animatedBlurViewProps}

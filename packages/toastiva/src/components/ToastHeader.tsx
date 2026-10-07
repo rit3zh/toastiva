@@ -1,6 +1,6 @@
 import { BlurView } from "expo-blur";
 import React, { memo } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { useToastHeaderMorph } from "../hooks/use-toast-header-morph";
 import { styles } from "../styles/toast.styles";
@@ -32,7 +32,7 @@ const ToastHeader: React.NamedExoticComponent<IToastHeaderProps> = memo(
       headerRootStyle,
     ];
 
-    const liveStyle = [...baseStyle, props.maxWidthStyle];
+    const liveStyle = [styles.headerClip, ...baseStyle, props.maxWidthStyle];
     const morph = useToastHeaderMorph({
       color: props.color,
       headerContent: props.headerContent,
@@ -113,13 +113,8 @@ const ToastHeader: React.NamedExoticComponent<IToastHeaderProps> = memo(
         {Platform.OS === "ios" && !props.disableIOSBlur ? (
           <AnimatedBlurView
             animatedProps={morph.animatedBlurProps}
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                borderRadius: 9999,
-                overflow: "hidden",
-              },
-            ]}
+            pointerEvents="none"
+            style={styles.headerBlur}
             tint={props.iosBlurTint}
           />
         ) : null}

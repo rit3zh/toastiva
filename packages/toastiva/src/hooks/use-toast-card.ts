@@ -469,7 +469,7 @@ function useToastCard(props: IToastivaProps) {
 }
 
 const COLLAPSE_BODY_UNMOUNT_DELAY = 320;
-const MORPH_BODY_DELAY = 120;
+const MORPH_BODY_DELAY = 200;
 const STACKED_FRONT_REVEAL_DELAY = SHOW_BODY_DELAY + 220;
 
 export { useToastCard };

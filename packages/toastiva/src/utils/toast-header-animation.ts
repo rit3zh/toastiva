@@ -6,15 +6,15 @@ import type {
 } from "../typings";
 
 const HEADER_BLUR_INTENSITY = 15;
-const HEADER_LAYER_CLEAR_MS = 450;
+const HEADER_LAYER_CLEAR_MS = 380;
 const HEADER_SMEAR_OFFSET = 14;
 const HEADER_SMEAR_OPACITY = 0.6;
 const HEADER_SMEAR_SCALE = 1.18;
 const HEADER_SMEAR_TEXT_RADIUS = 15;
 const HEADER_TITLE_ENTER_OFFSET = 15;
 const HEADER_TITLE_EXIT_OFFSET = 12;
-const HEADER_TITLE_EXIT_MS = 420;
-const HEADER_TITLE_MORPH_MS = 800;
+const HEADER_TITLE_EXIT_MS = 300;
+const HEADER_TITLE_MORPH_MS = 520;
 
 function createHeaderLayer<T extends IHeaderLayerParams>(props: T) {
   return {

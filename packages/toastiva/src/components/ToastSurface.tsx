@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import Svg from "react-native-svg";
 import { styles } from "../styles/toast.styles";
 import type { IToastSurfaceProps } from "../typings";
+import { ToastivaHorizontalAlign } from "../typings";
 import { BlobPath } from "./BlobPath";
 import { ToastBody } from "./ToastBody";
 import { ToastHeader } from "./ToastHeader";
@@ -94,19 +95,35 @@ const ToastSurface: React.MemoExoticComponent<React.FC<IToastSurfaceProps>> =
           </Animated.View>
 
           {!hasBodyContent && !props.toast.isLoading && props.showProgress ? (
-            <View>
-              <ToastProgress
-                backgroundColor={`${props.color}40`}
-                fillStyle={props.styleOverrides?.progressFill}
-                trackStyle={props.styleOverrides?.progressTrack}
-                style={props.progressStyle}
-              />
+            <View
+              pointerEvents="none"
+              style={[
+                styles.pillProgressFrame,
+                { alignItems: getPillAlign(props.headerAlign) },
+              ]}
+            >
+              <Animated.View
+                style={[styles.pillProgressClip, props.headerMaxWidthStyle]}
+              >
+                <ToastProgress
+                  backgroundColor={`${props.color}40`}
+                  fillStyle={props.styleOverrides?.progressFill}
+                  trackStyle={props.styleOverrides?.progressTrack}
+                  style={props.progressStyle}
+                />
+              </Animated.View>
             </View>
           ) : null}
         </View>
       );
     },
   );
+
+function getPillAlign(align: IToastSurfaceProps["headerAlign"]) {
+  if (align === ToastivaHorizontalAlign.Center) return "center" as const;
+  if (align === ToastivaHorizontalAlign.Right) return "flex-end" as const;
+  return "flex-start" as const;
+}
 
 const svgShapeShadowStyle = {
   filter: "drop-shadow(0px 12px 24px rgba(0,0,0,0.22))" as const,

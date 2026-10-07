@@ -90,15 +90,13 @@ function useToastDismiss(params: IUseToastDismissParams) {
     values.descriptionProgress.value = contentFade;
     values.actionProgress.value = contentFade;
 
-    const exitFadeDuration = 320;
-    const exitDelay = collapseBeforeExit
-      ? Math.round(collapseShapeDuration * 0.45)
-      : 40;
+    const exitFadeDuration = 300;
+    const exitDelay = collapseBeforeExit ? DISMISS_COLLAPSE_LEAD : 0;
     values.removeProgress.value = withDelay(
       exitDelay,
       withTiming(1, {
         duration: exitFadeDuration,
-        easing: Easing.out(Easing.quad),
+        easing: Easing.out(Easing.cubic),
       }),
     );
     toast.onDismiss?.();
@@ -161,6 +159,8 @@ function useToastDismiss(params: IUseToastDismissParams) {
 
   return { handleDismiss, isDismissing };
 }
+
+const DISMISS_COLLAPSE_LEAD = 170;
 
 function getSmoothDismissCollapseDuration(duration: number) {
   return Math.max(260, duration);
