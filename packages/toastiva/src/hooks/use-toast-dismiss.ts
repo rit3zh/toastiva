@@ -2,11 +2,10 @@ import type { IUseToastDismissParams } from "../typings";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Easing,
-  withDelay,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { SHOW_BODY_DELAY } from "../constants";
+import { MOTION_DURATION, SHOW_BODY_DELAY } from "../constants";
 import { getCollapseDuration, getDisplayDuration } from "../utils/toast-timing";
 
 function useToastDismiss(params: IUseToastDismissParams) {
@@ -90,17 +89,9 @@ function useToastDismiss(params: IUseToastDismissParams) {
     values.descriptionProgress.value = contentFade;
     values.actionProgress.value = contentFade;
 
-    const exitFadeDuration = 300;
-    const exitDelay = collapseBeforeExit ? DISMISS_COLLAPSE_LEAD : 0;
-    values.removeProgress.value = withDelay(
-      exitDelay,
-      withTiming(1, {
-        duration: exitFadeDuration,
-        easing: Easing.out(Easing.cubic),
-      }),
-    );
+    values.removeProgress.value = withSpring(1, springConfig.mount);
     toast.onDismiss?.();
-    setTimeout(() => onRemove(toast.id), exitDelay + exitFadeDuration + 40);
+    setTimeout(() => onRemove(toast.id), EXIT_DURATION);
   }, [
     collapseDuration,
     animationConfig.morph.collapseDuration,
@@ -160,7 +151,7 @@ function useToastDismiss(params: IUseToastDismissParams) {
   return { handleDismiss, isDismissing };
 }
 
-const DISMISS_COLLAPSE_LEAD = 170;
+const EXIT_DURATION = MOTION_DURATION;
 
 function getSmoothDismissCollapseDuration(duration: number) {
   return Math.max(260, duration);

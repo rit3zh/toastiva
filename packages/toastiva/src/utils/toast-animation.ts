@@ -2,6 +2,7 @@ import {
   BODY_REVEAL_SPRING,
   MORPH_COLLAPSE_SPRING,
   MORPH_SPRING,
+  MOTION_DURATION,
   MOUNT_SPRING,
   PILL_RESIZE_SPRING,
   SQUISH_SPRING,
@@ -17,11 +18,14 @@ import type { IResolvedToastAnimationConfig } from "../typings/utils/ToastUtils"
 import { mergeSpringConfig } from "./toast-spring";
 
 const smoothAnimation: IToastivaAnimationConfig = {
-  mount: { axis: "y", duration: 420, offset: 50 },
+  mount: { axis: "y", duration: 400, offset: 6 },
   morph: {
-    actionDelay: 80,
-    collapseDuration: 280,
-    squishDuration: 90,
+    actionDelay: 0,
+    bodyFadeDelay: MOTION_DURATION * 0.3,
+    bodyFadeDuration: MOTION_DURATION * 0.6,
+    collapseDuration: MOTION_DURATION,
+    descriptionDelay: 0,
+    squishDuration: 1,
     squishScaleX: 1,
     squishScaleY: 1,
   },
@@ -34,13 +38,24 @@ const smoothAnimation: IToastivaAnimationConfig = {
     scaleStep: 0.05,
   },
   compact: {
-    squishDuration: 55,
-    squishScaleX: 1.03,
-    squishScaleY: 0.95,
+    squishDuration: 1,
+    squishScaleX: 1,
+    squishScaleY: 1,
   },
-  springs: {
-    morph: { damping: 23, stiffness: 235, mass: 1 },
-  },
+  springs: {},
+};
+
+const legacyMorph: IToastivaAnimationConfig["morph"] = {
+  actionDelay: 80,
+  bodyFadeDelay: undefined,
+  bodyFadeDuration: undefined,
+  descriptionDelay: undefined,
+};
+
+const legacyCompact: IToastivaAnimationConfig["compact"] = {
+  squishDuration: 55,
+  squishScaleX: 1.03,
+  squishScaleY: 0.95,
 };
 
 const toastivaAnimationPresets: Record<
@@ -53,6 +68,7 @@ const toastivaAnimationPresets: Record<
     mount: { axis: "y", duration: 260, offset: 30 },
     morph: {
       ...smoothAnimation.morph,
+      ...legacyMorph,
       collapseDuration: 190,
       squishDuration: 44,
       squishScaleX: 1.04,
@@ -79,8 +95,10 @@ const toastivaAnimationPresets: Record<
   [ToastivaAnimationPreset.Gentle]: {
     ...smoothAnimation,
     mount: { axis: "y", duration: 560, offset: 36 },
+    compact: legacyCompact,
     morph: {
       ...smoothAnimation.morph,
+      ...legacyMorph,
       collapseDuration: 360,
       squishDuration: 80,
       squishScaleX: 1.035,

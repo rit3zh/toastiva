@@ -60,7 +60,7 @@ Available: `"default"`, `"snappy"`, `"gentle"`.
   </tr>
   <tr>
     <td><code>springs.morph</code></td>
-    <td>Reanimated spring — <code>damping</code>, <code>stiffness</code>, <code>mass</code>.</td>
+    <td>Reanimated spring — <code>damping</code>, <code>stiffness</code>, <code>mass</code>, or <code>duration</code> and <code>dampingRatio</code>. The default preset uses <code>{ duration: 600, dampingRatio: 0.75 }</code>.</td>
   </tr>
 </table>
 

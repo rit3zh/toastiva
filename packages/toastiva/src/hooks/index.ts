@@ -2,6 +2,7 @@ export { useAnimatedActionStyle } from "./use-animated-action-styles";
 export { useAnimatedContentStyle } from "./use-animated-content-styles";
 export { useAnimatedDescriptionStyle } from "./use-animated-description-styles";
 export { useAnimatedHeaderMaxWidthStyle } from "./use-animated-header-max-styles";
+export { useAnimatedHeaderStyle } from "./use-animated-header-styles";
 export { useAnimatedPathProps } from "./use-animated-path-props";
 export { useAnimatedProgressStyle } from "./use-animated-progress-styles";
 export { useToastAnimatedStyles } from "./use-toast-animated-styles";

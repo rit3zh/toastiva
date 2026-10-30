@@ -18,34 +18,35 @@ const DEFAULT_OFFSET = 8;
 const DEFAULT_DURATION = 5000;
 const DEFAULT_BODY_RADIUS = 16;
 const DEFAULT_CORNER_SMOOTHING = 0.6;
-const DEFAULT_SWIPE_THRESHOLD = 45;
+const DEFAULT_SWIPE_THRESHOLD = 30;
 const DEFAULT_HORIZONTAL_INSET = 16;
 const EXPANDED_TOAST_MAX_WIDTH = 720;
-const SHOW_BODY_DELAY = 330;
+const SHOW_BODY_DELAY = 150;
 
 const MORPH_OVERSHOOT = 0.14;
 
-const MOUNT_SPRING: WithSpringConfig = {
-  damping: 16,
-  stiffness: 200,
-  mass: 0.7,
+const MOTION_DURATION = 600;
+
+const MORPH_SPRING: WithSpringConfig = {
+  duration: MOTION_DURATION,
+  dampingRatio: 0.75,
 };
+
+const MORPH_COLLAPSE_SPRING: WithSpringConfig = {
+  duration: MOTION_DURATION,
+  dampingRatio: 1,
+};
+
+const FAST_SPRING: WithSpringConfig = {
+  duration: MOTION_DURATION * 0.66,
+  dampingRatio: 0.75,
+};
+
+const MOUNT_SPRING: WithSpringConfig = FAST_SPRING;
 const STACK_SPRING: WithSpringConfig = {
   damping: 20,
   stiffness: 220,
   mass: 0.7,
-};
-
-const MORPH_SPRING: WithSpringConfig = {
-  damping: 23,
-  stiffness: 235,
-  mass: 1,
-};
-
-const MORPH_COLLAPSE_SPRING: WithSpringConfig = {
-  damping: 31,
-  stiffness: 235,
-  mass: 1,
 };
 const PILL_RESIZE_SPRING: WithSpringConfig = MORPH_SPRING;
 const BODY_REVEAL_SPRING: WithSpringConfig = MORPH_SPRING;
@@ -71,12 +72,14 @@ export {
   DEFAULT_VISIBLE_TOASTS,
   DESC_SIZE,
   EXPANDED_TOAST_MAX_WIDTH,
+  FAST_SPRING,
   ICON_GAP,
   ICON_SIZE,
   MORPH_COLLAPSE_SPRING,
   MORPH_OVERSHOOT,
   MORPH_SPRING,
   MORPH_SWAP_COLLAPSE_MS,
+  MOTION_DURATION,
   MOUNT_SPRING,
   PH,
   PILL_PADDING_H,

@@ -16,6 +16,7 @@ interface IToastAnimatedStylesResult {
   contentStyle: TToastivaAnimatedViewStyle;
   descriptionStyle: TToastivaAnimatedViewStyle;
   headerMaxWidthStyle: TToastivaAnimatedViewStyle;
+  headerStyle: TToastivaAnimatedViewStyle;
   progressStyle: TToastivaAnimatedViewStyle;
   shellStyle: TToastivaAnimatedViewStyle;
 }

@@ -7,7 +7,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ThemeProvider value={DefaultTheme}>
-          <ToastivaProvider mode={ToastivaMode.Morph}>
+          <ToastivaProvider mode={ToastivaMode.Morph} position="top-left" animationPreset="smooth">
             <Stack>
               <Stack.Screen
                 name="(toast-variants)"

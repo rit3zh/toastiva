@@ -79,39 +79,21 @@ function useToastEffects(params: IUseToastEffectsParams) {
     const dimensionSpring = morphMode
       ? springConfig.morph
       : springConfig.pillResize;
-    const dimensionTiming = {
-      duration: expandDuration,
-      easing: Easing.out(Easing.cubic),
-    };
+    const animateDimension = (toValue: number) =>
+      shouldAnimateDimensions ? withSpring(toValue, dimensionSpring) : toValue;
 
-    values.bodyWidth.value = shouldAnimateDimensions
-      ? morphMode
-        ? withSpring(bodyWidth, dimensionSpring)
-        : withTiming(bodyWidth, dimensionTiming)
-      : bodyWidth;
-    values.bodyRadius.value = shouldAnimateDimensions
-      ? morphMode
-        ? withSpring(bodyRadius, dimensionSpring)
-        : withTiming(bodyRadius, dimensionTiming)
-      : bodyRadius;
-    values.expandedHeight.value = shouldAnimateDimensions
-      ? morphMode
-        ? withSpring(expandedHeight, dimensionSpring)
-        : withTiming(expandedHeight, dimensionTiming)
-      : expandedHeight;
-    values.pillWidth.value =
-      shouldAnimateDimensions && !morphMode
-        ? withTiming(pillWidth, dimensionTiming)
-        : withSpring(pillWidth, dimensionSpring);
-    values.collapsedHeight.value =
-      shouldAnimateDimensions && !morphMode
-        ? withTiming(collapsedCardHeight, dimensionTiming)
-        : withSpring(collapsedCardHeight, dimensionSpring);
+    values.bodyWidth.value = animateDimension(bodyWidth);
+    values.bodyRadius.value = animateDimension(bodyRadius);
+    values.expandedHeight.value = animateDimension(expandedHeight);
+    values.pillWidth.value = withSpring(pillWidth, dimensionSpring);
+    values.collapsedHeight.value = withSpring(
+      collapsedCardHeight,
+      dimensionSpring,
+    );
   }, [
     bodyWidth,
     bodyRadius,
     collapsedCardHeight,
-    expandDuration,
     expandedHeight,
     hasBody,
     isMeasured,
@@ -198,7 +180,7 @@ function useToastEffects(params: IUseToastEffectsParams) {
         bodyFadeDelay,
         withTiming(1, {
           duration: bodyFadeDuration,
-          easing: Easing.out(Easing.cubic),
+          easing: CONTENT_EASE,
         }),
       );
       values.descriptionProgress.value = withDelay(
@@ -235,7 +217,7 @@ function useToastEffects(params: IUseToastEffectsParams) {
     );
     const contentFadeDelay = Math.round(collapseShapeDuration * 0.04);
     const contentFadeDuration = Math.max(
-      60,
+      40,
       Math.round(collapseShapeDuration * 0.08),
     );
     const contentFade = (toValue: number) =>
@@ -243,7 +225,7 @@ function useToastEffects(params: IUseToastEffectsParams) {
         contentFadeDelay,
         withTiming(toValue, {
           duration: contentFadeDuration,
-          easing: Easing.out(Easing.quad),
+          easing: CONTENT_EASE,
         }),
       );
 
@@ -340,6 +322,8 @@ function useToastEffects(params: IUseToastEffectsParams) {
     });
   }, [hasBody, shouldAutoExpand, toast, values.progress]);
 }
+
+const CONTENT_EASE = Easing.bezier(0.25, 0.1, 0.25, 1);
 
 function getSmoothCollapseDuration(duration: number) {
   return Math.max(260, duration);

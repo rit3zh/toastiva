@@ -162,7 +162,7 @@ function useToastHeaderMorph(params: IUseToastHeaderMorphParams) {
         1,
         {
           duration: HEADER_TITLE_EXIT_MS,
-          easing: Easing.out(Easing.cubic),
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
         },
         (finished) => {
           if (finished) scheduleOnRN(clearPrevLayer, morphVersion);

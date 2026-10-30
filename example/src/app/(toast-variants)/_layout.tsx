@@ -1,5 +1,5 @@
+import * as React from 'react';
 import { Stack } from "expo-router";
-import React from "react";
 
 export default function RootLayout() {
   return (
@@ -7,13 +7,13 @@ export default function RootLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerLargeTitleEnabled: true,
-          headerLargeTitleShadowVisible: true,
-          headerTitle: "Toastiva",
+          headerLargeTitleEnabled: false,
+          headerLargeTitleShadowVisible: false,
+          headerTitle: 'Toastiva',
           headerTitleStyle: { color: "#000" },
           headerShown: true,
-          freezeOnBlur: true,
-          scrollEdgeEffects: { top: "soft" },
+          freezeOnBlur: false,
+        
         }}
       />
       <Stack.Screen

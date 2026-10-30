@@ -56,6 +56,7 @@ const ToastCard: React.MemoExoticComponent<React.FC<IToastCardProps>> = memo(
                   bodyWidth={props.widths.bodyWidth}
                   headerAlign={props.headerAlign}
                   headerMaxWidthStyle={props.animated.headerMaxWidthStyle}
+                  headerStyle={props.animated.headerStyle}
                   color={props.color}
                   canInteract={props.isFront || props.expanded}
                   contentStyle={props.animated.contentStyle}

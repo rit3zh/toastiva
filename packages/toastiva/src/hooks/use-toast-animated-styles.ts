@@ -4,6 +4,7 @@ import { useAnimatedCardStyles } from "./use-animated-card-styles";
 import { useAnimatedContentStyle } from "./use-animated-content-styles";
 import { useAnimatedDescriptionStyle } from "./use-animated-description-styles";
 import { useAnimatedHeaderMaxWidthStyle } from "./use-animated-header-max-styles";
+import { useAnimatedHeaderStyle } from "./use-animated-header-styles";
 import { useAnimatedPathProps } from "./use-animated-path-props";
 import { useAnimatedProgressStyle } from "./use-animated-progress-styles";
 import { useAnimatedShellStyle } from "./use-animated-shell-styles";
@@ -28,6 +29,8 @@ function useToastAnimatedStyles<T extends IUseToastAnimatedStylesParams>(
     useAnimatedContentStyle<IUseToastAnimatedStylesParams>(params);
   const headerMaxWidthStyle =
     useAnimatedHeaderMaxWidthStyle<IUseToastAnimatedStylesParams>(params);
+  const headerStyle =
+    useAnimatedHeaderStyle<IUseToastAnimatedStylesParams>(params);
   const progressStyle =
     useAnimatedProgressStyle<IUseToastAnimatedStylesParams>(params);
 
@@ -37,6 +40,7 @@ function useToastAnimatedStyles<T extends IUseToastAnimatedStylesParams>(
     actionStyle,
     contentStyle,
     headerMaxWidthStyle,
+    headerStyle,
     progressStyle,
     cardStyle,
     bodyStyle,

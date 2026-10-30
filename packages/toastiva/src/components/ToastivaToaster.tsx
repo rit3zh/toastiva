@@ -29,7 +29,7 @@ interface IToastivaToasterProps extends IToastivaConfig {
 const ToastivaToaster: React.MemoExoticComponent<
   React.FC<IToastivaToasterProps>
 > =
-  memo(
+  memo<React.FC<IToastivaToasterProps>>(
     ({
       animation,
       animationPreset,

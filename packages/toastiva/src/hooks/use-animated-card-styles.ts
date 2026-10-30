@@ -48,8 +48,8 @@ const useAnimatedCardStyles = <T extends IUseToastAnimatedStylesParams>(
   return animatedCardStyles;
 };
 
-const EXIT_TRAVEL = 0.35;
-const EXIT_SCALE = 0.94;
+const EXIT_TRAVEL = 1;
+const EXIT_SCALE = 0.95;
 const MOUNT_SCALE = 0.95;
 
 export { useAnimatedCardStyles };

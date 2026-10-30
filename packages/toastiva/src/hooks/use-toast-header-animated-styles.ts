@@ -8,7 +8,10 @@ import {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
-import { HEADER_BLUR_INTENSITY } from "../utils/toast-header-animation";
+import {
+  HEADER_BLUR_INTENSITY,
+  HEADER_LAYER_MIN_SCALE,
+} from "../utils/toast-header-animation";
 
 const USE_FILTER_BLUR = Platform.OS === "android" || Platform.OS === "web";
 const HEADER_LAYER_MAX_BLUR_PX = 2.5;
@@ -20,9 +23,20 @@ function useToastHeaderAnimatedStyles(
   const currentHeaderStyle = useAnimatedStyle(() => {
     const progress = currentTitleProgress.value;
     const opacity = interpolate(progress, [0, 1], [0, 1], Extrapolation.CLAMP);
-    if (!USE_FILTER_BLUR) return { opacity };
+    const transform = [
+      {
+        scale: interpolate(
+          progress,
+          [0, 1],
+          [HEADER_LAYER_MIN_SCALE, 1],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ];
+    if (!USE_FILTER_BLUR) return { opacity, transform };
     return {
       opacity,
+      transform,
       filter: [
         {
           blur: interpolate(
@@ -39,9 +53,20 @@ function useToastHeaderAnimatedStyles(
   const prevHeaderStyle = useAnimatedStyle(() => {
     const progress = prevTitleProgress.value;
     const opacity = interpolate(progress, [0, 1], [1, 0], Extrapolation.CLAMP);
-    if (!USE_FILTER_BLUR) return { opacity };
+    const transform = [
+      {
+        scale: interpolate(
+          progress,
+          [0, 1],
+          [1, HEADER_LAYER_MIN_SCALE],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ];
+    if (!USE_FILTER_BLUR) return { opacity, transform };
     return {
       opacity,
+      transform,
       filter: [
         {
           blur: interpolate(

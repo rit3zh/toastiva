@@ -1,20 +1,47 @@
-import { useFonts } from "expo-font";
+import {
+  Button,
+  ContentUnavailableView,
+  Host,
+  HStack,
+  Image,
+  List,
+  Section,
+  Spacer,
+  Text as SwiftText,
+  VStack,
+  type ImageProps,
+} from "@expo/ui/swift-ui";
+import {
+  background,
+  buttonBorderShape,
+  buttonStyle,
+  controlSize,
+  font,
+  foregroundStyle,
+  frame,
+  lineLimit,
+  listRowBackground,
+  listRowInsets,
+  listRowSeparator,
+  listRowSeparatorTint,
+  listRowSpacing,
+  listSectionMargins,
+  listSectionSpacing,
+  listStyle,
+  multilineTextAlignment,
+  opacity,
+  padding,
+  shapes,
+} from "@expo/ui/swift-ui/modifiers";
 import { Stack, useRouter, type Href } from "expo-router";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  FlatList,
-  NativeSyntheticEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInputFocusEventData,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { toastiva } from "toastiva";
 import AirPodsModel from "../../../components/models/3d-airpods";
 import { ANIMATION_SECTIONS } from "../../../components/toast-demos";
-import { SquircleView } from "../../../reacticx-components/squircle-view";
+
+type SFSymbol = NonNullable<ImageProps["systemName"]>;
 
 type ToastivaShowcaseItem = {
   title: string;
@@ -31,8 +58,6 @@ type ToastivaShowcaseSection = {
   items: ToastivaShowcaseItem[];
 };
 
-const ROW_HEIGHT = 60;
-
 const fakeWait = (ms: number, shouldReject = false) =>
   new Promise<{ id: string }>((resolve, reject) => {
     setTimeout(() => {
@@ -43,49 +68,28 @@ const fakeWait = (ms: number, shouldReject = false) =>
 
 const SECTIONS: ToastivaShowcaseSection[] = [
   {
-    title: "Screens",
-    footer: "Demo flows that live alongside this index in (toast-variants).",
-    items: [
-      {
-        title: "Check Balance",
-        description: "Account balance flow.",
-        symbol: "creditcard.fill",
-        tint: "#FF3B30",
-        route: "/(toast-variants)/check-balance",
-      },
-      {
-        title: "Create Room",
-        description: "Spin up a new room.",
-        symbol: "plus.circle.fill",
-        tint: "#FF2D55",
-        route: "/(toast-variants)/create-room",
-      },
-      {
-        title: "Edit Profile",
-        description: "Update profile details.",
-        symbol: "person.crop.circle.fill",
-        tint: "#0A84FF",
-        route: "/(toast-variants)/edit-profile",
-      },
-      {
-        title: "Family Sharing",
-        description: "Invite or manage family members.",
-        symbol: "checkmark.seal.fill",
-        tint: "#34C759",
-        route: "/(toast-variants)/success",
-      },
-    ],
-  },
-  {
     title: "Variants",
-    footer: "The four built-in tones. Tap any row to preview.",
+    footer: "The built-in tones. Tap any row to preview.",
     items: [
+      {
+        title: "Default",
+        description: "A neutral, untinted notification.",
+        symbol: "bell.fill",
+        tint: "#8E8E93",
+        onPress: () =>
+          toastiva("Notification", {
+            description: "The plain default tone.",
+          }),
+      },
       {
         title: "Success",
         description: "Confirms a completed action.",
         symbol: "checkmark.circle.fill",
         tint: "#34C759",
-        onPress: () => toastiva.success("Success"),
+        onPress: () =>
+          toastiva.success("Changes saved", {
+            description: "Everything is up to date.",
+          }),
       },
       {
         title: "Error",
@@ -154,6 +158,292 @@ const SECTIONS: ToastivaShowcaseSection[] = [
             description:
               "Toastiva morphs between sizes when content changes — descriptions, actions, even type can update mid-flight without remounting the toast.",
           }),
+      },
+    ],
+  },
+  {
+    title: "Live updates",
+    footer:
+      "toastiva.update(id, …) morphs an existing toast in place — no remount.",
+    items: [
+      {
+        title: "Multi-step task",
+        description: "Loading → progress → done, one toast.",
+        symbol: "list.bullet.clipboard.fill",
+        tint: "#5E5CE6",
+        onPress: () => {
+          const id = toastiva.info("Preparing export", {
+            description: "Gathering 128 files…",
+            isLoading: true,
+            dismissible: false,
+            duration: 10000,
+          });
+          setTimeout(
+            () =>
+              toastiva.update(id, {
+                title: "Compressing",
+                description: "Packing everything into a .zip…",
+              }),
+            1300,
+          );
+          setTimeout(
+            () =>
+              toastiva.update(id, {
+                title: "Export ready",
+                type: "success",
+                description: "toastiva-export.zip · 24 MB",
+                isLoading: false,
+                dismissible: true,
+                duration: 3500,
+                action: {
+                  label: "Share",
+                  onPress: () => toastiva.success("Shared"),
+                },
+              }),
+            2800,
+          );
+        },
+      },
+      {
+        title: "Download progress",
+        description: "Updates the meta label as it ticks.",
+        symbol: "arrow.down.circle.fill",
+        tint: "#0A84FF",
+        onPress: () => {
+          const id = toastiva.info("Downloading", {
+            description: "Toastiva Sample Pack · 48 MB",
+            meta: "0%",
+            isLoading: true,
+            duration: 10000,
+          });
+          let progress = 0;
+          const timer = setInterval(() => {
+            progress += 20;
+            if (progress < 100) {
+              toastiva.update(id, { meta: `${progress}%` });
+              return;
+            }
+            clearInterval(timer);
+            toastiva.update(id, {
+              title: "Download complete",
+              type: "success",
+              meta: "100%",
+              isLoading: false,
+              duration: 3000,
+            });
+          }, 500);
+        },
+      },
+      {
+        title: "Change tone",
+        description: "Warning that resolves into success.",
+        symbol: "wifi",
+        tint: "#FF9F0A",
+        onPress: () => {
+          const id = toastiva.warning("Connection unstable", {
+            description: "Trying to reconnect…",
+            duration: 6000,
+          });
+          setTimeout(
+            () =>
+              toastiva.update(id, {
+                title: "Back online",
+                type: "success",
+                description: "All changes are synced.",
+                duration: 2500,
+              }),
+            1800,
+          );
+        },
+      },
+    ],
+  },
+  {
+    title: "Content",
+    footer: "Meta labels, timestamps, icons, and timing per toast.",
+    items: [
+      {
+        title: "Meta label",
+        description: "A small trailing label in the header.",
+        symbol: "tag.fill",
+        tint: "#30B0C7",
+        onPress: () =>
+          toastiva.info("New message", {
+            description: "Are we still on for tonight?",
+            meta: "now",
+          }),
+      },
+      {
+        title: "Timestamp",
+        description: "Show when the toast appeared.",
+        symbol: "clock.fill",
+        tint: "#64D2FF",
+        onPress: () =>
+          toastiva.success("Draft saved", {
+            description: "Your note is stored locally.",
+            showTimestamp: true,
+          }),
+      },
+      {
+        title: "Custom icon",
+        description: "Any React node as the icon.",
+        symbol: "music.note",
+        tint: "#FF2D55",
+        onPress: () =>
+          toastiva("Now playing", {
+            description: "Midnight City · M83",
+            icon: (
+              <SymbolView name="music.note" size={14} tintColor="#FF2D55" />
+            ),
+          }),
+      },
+      {
+        title: "Progress bar",
+        description: "Visualise the remaining time.",
+        symbol: "timer",
+        tint: "#34C759",
+        onPress: () =>
+          toastiva.info("Auto-dismissing", {
+            description: "Watch the bar run down.",
+            showProgress: true,
+            duration: 5000,
+          }),
+      },
+      {
+        title: "Sticky",
+        description: "Stays until you act on it.",
+        symbol: "pin.fill",
+        tint: "#FF9F0A",
+        onPress: () => {
+          const id: string = toastiva.warning("Unsaved changes", {
+            description: "You have edits that haven't been saved.",
+            duration: 60000,
+            dismissible: false,
+            action: {
+              label: "Save",
+              onPress: () => {
+                toastiva.dismiss(id);
+                toastiva.success("Saved");
+              },
+            },
+          });
+        },
+      },
+    ],
+  },
+  {
+    title: "Callbacks",
+    footer: "React to a toast closing with onAutoClose and onDismiss.",
+    items: [
+      {
+        title: "Chained toasts",
+        description: "Each one opens the next on close.",
+        symbol: "link",
+        tint: "#5856D6",
+        onPress: () =>
+          toastiva.info("Step 1 of 3", {
+            description: "Connecting your account.",
+            duration: 1600,
+            onAutoClose: () =>
+              toastiva.info("Step 2 of 3", {
+                description: "Importing your contacts.",
+                duration: 1600,
+                onAutoClose: () =>
+                  toastiva.success("All set", {
+                    description: "Your workspace is ready.",
+                  }),
+              }),
+          }),
+      },
+      {
+        title: "On dismiss",
+        description: "Swipe it away to trigger a follow-up.",
+        symbol: "hand.draw.fill",
+        tint: "#AF52DE",
+        onPress: () =>
+          toastiva("Swipe me away", {
+            description: "A follow-up appears once I'm gone.",
+            duration: 8000,
+            onDismiss: () => toastiva.success("Dismissed"),
+          }),
+      },
+    ],
+  },
+  {
+    title: "Real world",
+    footer: "Everyday moments, straight out of a real app.",
+    items: [
+      {
+        title: "Incoming message",
+        description: "Sender, preview, and a quick reply.",
+        symbol: "message.fill",
+        tint: "#34C759",
+        onPress: () =>
+          toastiva("Maya Chen", {
+            description: "Sent you the final designs.",
+            meta: "now",
+            icon: (
+              <SymbolView name="message.fill" size={14} tintColor="#34C759" />
+            ),
+            action: {
+              label: "Reply",
+              onPress: () => toastiva.success("Reply sent"),
+            },
+          }),
+      },
+      {
+        title: "Order shipped",
+        description: "Delivery update with tracking.",
+        symbol: "shippingbox.fill",
+        tint: "#A2845E",
+        onPress: () =>
+          toastiva.success("Order shipped", {
+            description: "Arrives Thursday · 2 items",
+            action: {
+              label: "Track",
+              onPress: () => toastiva.info("Out for delivery"),
+            },
+          }),
+      },
+      {
+        title: "Payment declined",
+        description: "Error with a retry that resolves.",
+        symbol: "creditcard.trianglebadge.exclamationmark",
+        tint: "#FF3B30",
+        onPress: () =>
+          toastiva.error("Payment declined", {
+            description: "Your card ending in 4242 was declined.",
+            action: {
+              label: "Retry",
+              onPress: () =>
+                toastiva.promise(fakeWait(1400), {
+                  loading: "Retrying payment…",
+                  success: "Payment complete",
+                  error: "Still declined",
+                }),
+            },
+          }),
+      },
+      {
+        title: "Low battery",
+        description: "A gentle nudge with an action.",
+        symbol: "battery.25percent",
+        tint: "#FFCC00",
+        onPress: () =>
+          toastiva.warning("Battery at 10%", {
+            description: "Turn on Low Power Mode to keep going.",
+            action: {
+              label: "Enable",
+              onPress: () => toastiva.success("Low Power Mode on"),
+            },
+          }),
+      },
+      {
+        title: "Link copied",
+        description: "Tiny confirmation, nothing more.",
+        symbol: "link.circle.fill",
+        tint: "#8E8E93",
+        onPress: () => toastiva.success("Link copied", { meta: "Clipboard" }),
       },
     ],
   },
@@ -234,23 +524,168 @@ const SECTIONS: ToastivaShowcaseSection[] = [
       },
     ],
   },
+  {
+    title: "Screens",
+    footer: "Demo flows that live alongside this index in (toast-variants).",
+    items: [
+      {
+        title: "Check Balance",
+        description: "Account balance flow.",
+        symbol: "creditcard.fill",
+        tint: "#FF3B30",
+        route: "/(toast-variants)/check-balance",
+      },
+      {
+        title: "Create Room",
+        description: "Spin up a new room.",
+        symbol: "plus.circle.fill",
+        tint: "#FF2D55",
+        route: "/(toast-variants)/create-room",
+      },
+      {
+        title: "Edit Profile",
+        description: "Update profile details.",
+        symbol: "person.crop.circle.fill",
+        tint: "#0A84FF",
+        route: "/(toast-variants)/edit-profile",
+      },
+      {
+        title: "Family Sharing",
+        description: "Invite or manage family members.",
+        symbol: "checkmark.seal.fill",
+        tint: "#34C759",
+        route: "/(toast-variants)/success",
+      },
+    ],
+  },
   ...ANIMATION_SECTIONS,
 ];
 
-const Index = () => {
-  const [fontsLoaded] = useFonts({
-    SfProRounded: require("@/assets/fonts/SF-Pro-Rounded-Regular.otf"),
-    SfProMedium: require("@/assets/fonts/SF-Pro-Rounded-Medium.otf"),
-  });
+const PLAYABLE_ITEMS = SECTIONS.flatMap((section) =>
+  section.items.filter((item) => !item.route && item.onPress),
+).filter((item) => item.title !== "Dismiss all");
 
+const playRandomToast = () => {
+  const item =
+    PLAYABLE_ITEMS[Math.floor(Math.random() * PLAYABLE_ITEMS.length)];
+  item?.onPress?.();
+};
+
+const ShowcaseHeader = () => (
+  <Section>
+    <VStack
+      spacing={8}
+      modifiers={[frame({ maxWidth: Infinity }), padding({ vertical: 12 })]}
+    >
+      <Image
+        systemName="bell.badge.fill"
+        size={26}
+        color="#FFFFFF"
+        modifiers={[
+          frame({ width: 60, height: 60 }),
+          background(
+            {
+              type: "linearGradient",
+              colors: ["#FF9F0A", "#FF375F"],
+              startPoint: { x: 0, y: 0 },
+              endPoint: { x: 1, y: 1 },
+            },
+            shapes.roundedRectangle({
+              cornerRadius: 16,
+              roundedCornerStyle: "continuous",
+            }),
+          ),
+        ]}
+      />
+      <SwiftText
+        modifiers={[
+          font({ textStyle: "title2", weight: "bold", design: "rounded" }),
+          padding({ top: 4 }),
+        ]}
+      >
+        Toastiva
+      </SwiftText>
+     
+      <Button
+        label="Surprise me"
+        systemImage="sparkles"
+        onPress={playRandomToast}
+        modifiers={[
+          buttonStyle("borderedProminent"),
+          buttonBorderShape("capsule"),
+          controlSize("large"),
+          padding({ top: 8 }),
+        ]}
+      />
+    </VStack>
+  </Section>
+);
+
+const ShowcaseRow = ({
+  item,
+  onPress,
+}: {
+  item: ToastivaShowcaseItem;
+  onPress: (item: ToastivaShowcaseItem) => void;
+}) => (
+  <Button onPress={() => onPress(item)}>
+    <HStack spacing={14}>
+      <Image
+        systemName={item.symbol as SFSymbol}
+        size={15}
+        color="#FFFFFF"
+        modifiers={[
+          frame({ width: 30, height: 30 }),
+          background(
+            item.tint,
+            shapes.roundedRectangle({
+              cornerRadius: 8,
+              roundedCornerStyle: "continuous",
+            }),
+          ),
+        ]}
+      />
+      <VStack alignment="leading" spacing={2}>
+        <SwiftText
+          modifiers={[
+            font({ size: 17, design: "rounded" }),
+            foregroundStyle("primary"),
+          ]}
+        >
+          {item.title}
+        </SwiftText>
+        <SwiftText
+          modifiers={[
+            font({ textStyle: "footnote", design: "rounded" }),
+            foregroundStyle("secondary"),
+            lineLimit(1),
+          ]}
+        >
+          {item.description}
+        </SwiftText>
+      </VStack>
+      <Spacer />
+      {item.route ? (
+        <Image
+          systemName="chevron.right"
+          size={13}
+          modifiers={[
+            font({ size: 13, weight: "semibold" }),
+            foregroundStyle("secondary"),
+            opacity(0.5),
+          ]}
+        />
+      ) : null}
+    </HStack>
+  </Button>
+);
+
+const Index = () => {
   const router = useRouter();
   const [query, setQuery] = useState("");
-
-  const fontFamily = fontsLoaded ? "SfProRounded" : undefined;
-  const fontStyle = useMemo(() => ({ fontFamily }), [fontFamily]);
+  const search = query.trim().toLowerCase();
 
   const toastSections = useMemo(() => {
-    const search = query.trim().toLowerCase();
     if (!search) return SECTIONS;
 
     return SECTIONS.map((section) => ({
@@ -261,94 +696,21 @@ const Index = () => {
           item.description.toLowerCase().includes(search),
       ),
     })).filter((section) => section.items.length > 0);
-  }, [query]);
+  }, [search]);
 
   const onChangeText = useCallback(
-    (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+    (event: { nativeEvent: { text: string } }) => {
       setQuery(event.nativeEvent.text);
     },
     [],
   );
 
-  const renderSection = useCallback(
-    ({ item: section }: { item: ToastivaShowcaseSection }) => (
-      <View style={styles.section}>
-        <Text style={[styles.sectionHeader, fontStyle]}>
-          {section.title.toUpperCase()}
-        </Text>
-
-        <SquircleView
-          style={styles.card}
-          height={section.items.length * ROW_HEIGHT}
-          cornerRadius={28}
-          cornerSmoothing={0.98}
-          backgroundColor="#fff"
-        >
-          {section?.items.map((item, index) => {
-            const isLast = index === section.items.length - 1;
-            return (
-              <Pressable
-                key={item.title}
-                onPress={() => {
-                  if (item.route) router.push(item.route);
-                  else item.onPress?.();
-                }}
-                style={({ pressed }) => [
-                  styles.row,
-                  pressed && styles.rowPressed,
-                ]}
-              >
-                <SquircleView
-                  style={styles.iconTile}
-                  width={30}
-                  height={30}
-                  cornerSmoothing={0.88}
-                  backgroundColor={item.tint}
-                >
-                  <View style={styles.iconTileInner}>
-                    <SymbolView
-                      name={item.symbol}
-                      size={18}
-                      tintColor="#FFFFFF"
-                      resizeMode="scaleAspectFit"
-                    />
-                  </View>
-                </SquircleView>
-
-                <View style={styles.rowText}>
-                  <Text style={[styles.rowTitle, fontStyle]} numberOfLines={1}>
-                    {item.title}
-                  </Text>
-                  <Text
-                    style={[styles.rowDescription, fontStyle]}
-                    numberOfLines={1}
-                  >
-                    {item.description}
-                  </Text>
-                </View>
-
-                <SymbolView
-                  name="chevron.right"
-                  size={14}
-                  tintColor="#C7C7CC"
-                  resizeMode="scaleAspectFit"
-                  style={styles.chevron}
-                />
-
-                {!isLast && <View style={styles.separator} />}
-              </Pressable>
-            );
-          })}
-        </SquircleView>
-
-        {section.footer ?
-          <Text style={[styles.sectionFooter, fontStyle]}>
-            {section.footer}
-          </Text>
-        : null}
-      </View>
-    ),
-    [fontStyle],
+  const onRowPress = useCallback(
+    (item: ToastivaShowcaseItem) => {
+      if (item.route) router.push(item.route);
+      else item.onPress?.();
+    },
+    [router],
   );
 
   return (
@@ -361,21 +723,42 @@ const Index = () => {
           },
         }}
       />
-      <FlatList
-        data={toastSections}
-        renderItem={renderSection}
-        keyExtractor={(section) => section.title}
-        style={styles.scroll}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <Text style={[styles.emptyText, fontStyle]}>No matching toasts.</Text>
-        }
-        ListFooterComponent={<View style={styles.bottomSpacer} />}
-        keyboardDismissMode="on-drag"
-        keyboardShouldPersistTaps="handled"
-      />
+      <Host style={styles.host}>
+        {toastSections.length === 0 ? (
+          <ContentUnavailableView
+            title="No Results"
+            systemImage="magnifyingglass"
+            description={`No toasts match "${query.trim()}".`}
+          />
+        ) : (
+          <List
+            modifiers={[
+              listStyle("automatic"),
+            
+            ]}
+          >
+            {toastSections.map((section) => (
+              <Section
+                key={section.title}
+                title={section.title}
+                footer={
+                  section.footer ? (
+                    <SwiftText>{section.footer}</SwiftText>
+                  ) : undefined
+                }
+              >
+                {section.items.map((item) => (
+                  <ShowcaseRow
+                    key={item.title}
+                    item={item}
+                    onPress={onRowPress}
+                  />
+                ))}
+              </Section>
+            ))}
+          </List>
+        )}
+      </Host>
     </React.Fragment>
   );
 };
@@ -383,89 +766,8 @@ const Index = () => {
 export default Index;
 
 const styles = StyleSheet.create({
-  scroll: {
+  host: {
     flex: 1,
-    backgroundColor: "#F2F2F7",
-  },
-  scrollContent: {
-    paddingTop: 8,
-    paddingBottom: 32,
-  },
-  section: {
-    marginTop: 24,
-    paddingHorizontal: 16,
-  },
-  sectionHeader: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: "#6D6D72",
-    letterSpacing: 0.4,
-    marginBottom: 8,
-    marginLeft: 16,
-  },
-  sectionFooter: {
-    fontSize: 13,
-    color: "#6D6D72",
-    marginTop: 8,
-    marginHorizontal: 16,
-    lineHeight: 18,
-  },
-  card: {
-    overflow: "hidden",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    height: ROW_HEIGHT,
-    minHeight: 60,
-  },
-  rowPressed: {
-    backgroundColor: "#E5E5EA",
-  },
-  iconTile: {
-    marginRight: 14,
-  },
-  iconTileInner: {
-    ...StyleSheet.absoluteFill,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rowText: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  rowTitle: {
-    fontSize: 17,
-    color: "#000000",
-    marginBottom: 2,
-  },
-  rowDescription: {
-    fontSize: 13,
-    color: "#8E8E93",
-  },
-  chevron: {
-    width: 14,
-    height: 14,
-    marginLeft: 8,
-  },
-  separator: {
-    position: "absolute",
-    left: 60,
-    right: 0,
-    bottom: 0,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#C6C6C8",
-  },
-  bottomSpacer: {
-    height: 24,
-  },
-  emptyText: {
-    color: "#8E8E93",
-    fontSize: 15,
-    marginHorizontal: 32,
-    marginTop: 24,
   },
   airpodsToastHeader: {
     height: 40,

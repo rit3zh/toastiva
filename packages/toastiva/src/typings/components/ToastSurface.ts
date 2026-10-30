@@ -24,6 +24,7 @@ interface IToastSurfaceProps {
   disableIOSBlur: boolean;
   headerAlign: TToastivaHorizontalAlign;
   headerMaxWidthStyle: TToastivaAnimatedViewStyle;
+  headerStyle: TToastivaAnimatedViewStyle;
   iosBlurTint?: ValueOf<IToastivaData, "iosBlurTint">;
   meta?: string;
   mirrored?: boolean;
