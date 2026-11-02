@@ -182,6 +182,8 @@ interface IToastivaOptions {
   showIconBadge?: boolean;
   showProgress?: boolean;
   showTimestamp?: boolean;
+  /** Skip creating a toast if one is already open. */
+  singleton?: boolean;
   springConfig?: TToastivaSpringConfig;
   stroke?: string;
   styles?: IToastivaStyleOverrides;
