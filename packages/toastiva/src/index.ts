@@ -1,5 +1,5 @@
 export { ToastivaProvider } from "./components/ToastivaProvider";
-export { toastiva } from "./store";
+export { toastiva, toastiva as default } from "./store";
 export {
   ToastivaAnimationPreset,
   ToastivaBodyLayout,
