@@ -37,6 +37,12 @@ toastiva.info("New version available");
 toastiva.warning("Battery low");
 ```
 
+`toastiva` is also the default export, so this works too:
+
+```tsx
+import toastiva from "toastiva";
+```
+
 ## Custom content
 
 ```tsx
